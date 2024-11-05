@@ -3,7 +3,7 @@
  */
 
 import P from "parsimmon";
-import { Storyline, StorylineMetadata, StorylineRealization } from "../model/Storyline";
+import { RealizedLayer, Storyline, StorylineMetadata, StorylineRealization } from "../model/Storyline";
 
 /// parse SGB (Stanford GraphBase) or master files
 
@@ -89,9 +89,10 @@ export const sgb2storyline = (f: SgbFile<'sgb'>): readonly [Storyline, Storyline
   return [{ layers }, { characterDescriptions: chars(f), layerDescriptions, meetingDescriptions }];
 }
 
-export const master2storyline = (f: SgbFile<'master'>): readonly [Storyline, StorylineRealization, StorylineMetadata] => {
-  const layers = f.layers.map(l => ({ meetings: l.groups.filter(g => g.every(id => l.active.some(a => a === id))) }));
-  const layersOrdered = f.layers.map(l => l.groups.flat());
+export const master2storyline = (f: SgbFile<'master'>): readonly [StorylineRealization, StorylineMetadata] => {
+  const layers = f.layers.map<RealizedLayer>(l => ({
+    groups: l.groups.map(g => ({ type: g.every(id => l.active.some(x => x === id)) ? 'active' : 'inactive', ordered: g }))
+  }));
   const [layerDescriptions, meetingDescriptions] = meta(f);
-  return [{ layers }, { layersOrdered }, { characterDescriptions: chars(f), layerDescriptions, meetingDescriptions }];
+  return [{ layers }, { characterDescriptions: chars(f), layerDescriptions, meetingDescriptions }];
 }

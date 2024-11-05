@@ -11,7 +11,15 @@ export interface StorylineLayer {
 }
 
 export interface StorylineRealization {
-  layersOrdered: string[][]
+  layers: RealizedLayer[]
+}
+
+export interface RealizedLayer {
+  groups: { type: 'active' | 'inactive', ordered: string[] }[]
+}
+
+export interface StorylineDrawing {
+  layers: { character: string, y: number, groupId: number }[][]
 }
 
 export interface StorylineMetadata {
@@ -19,3 +27,6 @@ export interface StorylineMetadata {
   layerDescriptions: string[]
   meetingDescriptions: string[][]
 }
+
+export const realization2storyline = (r: StorylineRealization) =>
+  ({ layers: r.layers.map(l => ({ meetings: l.groups.filter(g => g.type === 'active').map(g => g.ordered) })) });

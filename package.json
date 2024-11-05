@@ -17,6 +17,7 @@
     "@types/parsimmon": "^1.10.9",
     "@types/react": "^18.2.60",
     "@types/react-dom": "^18.2.19",
+    "highs": "^1.0.1",
     "lodash": "^4.17.21",
     "parsimmon": "^1.18.1",
     "react": "^18.2.0",

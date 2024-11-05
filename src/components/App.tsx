@@ -10,7 +10,6 @@ export const App = (props: {}) => {
 WF Wilma Flintstone, called Wilma, wife of Fred Flintstone
 *
 PF Pebbles Flintstone, called Pebbles, the Flintstones’ infant daughter
-MP ??:?   , Question, why?   
 BR Bernard Matthew Rubble, called Barney, Fred’s best friend and next-door neighbor
 * test
 ER Elizabeth Jean Rubble, called Betty, Barney’s wife and Wilma’s best friend
