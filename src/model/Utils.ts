@@ -7,3 +7,16 @@ export function* windows2<T>(array: T[]) {
     yield [array[i], array[i + 1]] as readonly [T, T];
   }
 }
+
+type Body<T extends { kind: K; }, K extends string, R> =
+  { [P in T['kind']]: (t: T extends { kind: P; } ? T : never) => R };
+
+export const matchByKind = <T extends { kind: K }, K extends string, R>(t: T, body: Body<T, K, R>): R => {
+  return body[t.kind](t as any);
+}
+
+export const matchString = <K extends string, R>(k: K, body: { [P in K]: () => R }) => {
+  return body[k]();
+}
+
+export const unimplemented = () => { throw new Error('not implemented'); }

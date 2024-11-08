@@ -12,12 +12,12 @@ const highs = highsLoader({ locateFile: (file: string) => "https://lovasoa.githu
 
 const align = (r: StorylineRealization, mode: AlignCriterion) => 0;
 
-const mkConstraints = (r: StorylineRealization, gapRatio: number) => {
+const mkYConstraints = (r: StorylineRealization, gapRatio: number) => {
   let cnt = 0;
-  const res: string[] = [];
+  const res: string[] = ["y0 = 0"];  // anchor constraint
 
   for (let layer of r.layers) {
-    let rem = null;
+    let rem: number | null = null;
     for (let group of layer.groups) {
       if (group.ordered.length === 0) {
         throw new Error(`layer ${layer} has an empty group`);
@@ -35,5 +35,6 @@ const mkConstraints = (r: StorylineRealization, gapRatio: number) => {
 }
 
 // todo:
-//  anchor constraint:  y0 = 0
 //  optimization function
+//  bounds
+//  only one variable per group?
