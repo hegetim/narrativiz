@@ -2,25 +2,27 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { unimplemented } from "./Utils"
+import _ from "lodash"
+import { matchByKind, unimplemented } from "./Utils"
 
-interface QPMethods {
-  readonly plus: (other: QPNum | QPVar | QPTerm) => QPTerm
-  readonly minus: (other: QPNum | QPVar | QPTerm) => QPTerm
-  readonly negate: () => QPTerm
-  readonly times: (other: QPNum | QPVar | QPTerm) => QPTerm
-  readonly squared: () => QPTerm
+interface QPMethods<F extends QPMethods<F>> {
+  readonly plus: (other: QPTerm) => QPTerm
+  readonly minus: (other: QPTerm) => QPTerm
+  readonly negate: () => F
   readonly lessThanOrEqual: (other: QPTerm) => QPConstraint,
   readonly greaterThanOrEqual: (other: QPTerm) => QPConstraint,
   readonly equalTo: (other: QPTerm) => QPConstraint,
 }
 
-type QPVar = { kind: 'var', id: string } & QPMethods;
-type QPNum = { kind: 'num', value: number } & QPMethods;
-type QPLinear = { kind: 'linear', varIds: string[], a: number[], c: number } & QPMethods
-type QPQuadratic = { kind: 'quadratic', varIds: string[], m: number[][], lin: QPLinear } & QPMethods;
+interface QPMethodsMulti {
+  readonly times: (other: QPLinear) => QPQuadratic
+  readonly squared: () => QPQuadratic
+}
 
-type QPTerm = QPVar | QPNum | QPLinear | QPQuadratic;
+type QPLinear = { kind: 'linear', varIds: string[], a: number[], c: number } & QPMethods<QPLinear> & QPMethodsMulti;
+type QPQuadratic = { kind: 'quadratic', varIds: string[], m: number[][], lin: QPLinear } & QPMethods<QPQuadratic>;
+
+type QPTerm = QPLinear | QPQuadratic;
 
 type QPConstraint = {
   kind: '<=' | '=='
@@ -28,65 +30,69 @@ type QPConstraint = {
   right: number
 }
 
-// export const qpZero: QPZero = ({
-//   kind: '0',
-//   plus: other => other,
-//   minus: other => other.negate(),
-//   negate: () => qpZero,
-//   squared: () => qpZero,
-//   times: () => qpZero,
-//   equalTo: other => ({ kind: '==', left: other, right: 0 }),
-//   lessThanOrEqual: other => ({ kind: '<=', left: other.negate(), right: 0 }),
-//   greaterThanOrEqual: other => ({ kind: '<=', left: other, right: 0 }),
-// });
+export const qpNum = (value: number): QPLinear => linear([], [], value);
 
-// export const qpOne: QPOne = ({
-//   kind: '1',
-//   plus: other => plus(qpOne, other),
-//   minus: other => plus(qpOne, other.negate()),
-//   negate: () => qpNum(-1),
-//   squared: () => qpOne,
-//   times: other => other,
-//   equalTo: other => ({ kind: '==', left: other, right: 1 }),
-//   lessThanOrEqual: other => ({ kind: '<=', left: other.negate(), right: -1 }),
-//   greaterThanOrEqual: other => ({ kind: '<=', left: other, right: 1 }),
-// })
+export const qpVar = (id: string): QPLinear => linear([id], [1], 0);
 
-export const qpNum = (value: number): QPNum => ({
-  kind: 'num',
-  value,
-  plus: other => plus(qpNum(value), other),
-  minus: other => plus(qpNum(value), other.negate()),
-  negate: () => qpNum(-value),
-  squared: () => qpNum(value * value),
-  times: other => other.kind === 'num' ? qpNum(value * other.value) : other.times(qpNum(value)),
-  equalTo: other => equalTo(qpNum(value), other),
-  lessThanOrEqual: other => ({ kind: '<=', left: other.negate(), right: -value }),
-  greaterThanOrEqual: other => ({ kind: '<=', left: other, right: value }),
+const linear = (varIds: string[], a: number[], c: number): QPLinear => ({
+  ...{ varIds, a, c },
+  kind: 'linear',
+  plus: other => plus(linear(varIds, a, c), other),
+  minus: other => plus(linear(varIds, a, c), other.negate()),
+  negate: () => linear(varIds, a.map(x => -x), -c),
+  times: other => timesLin(linear(varIds, a, c), other),
+  squared: () => timesLin(linear(varIds, a, c), linear(varIds, a, c)),
+  lessThanOrEqual: other => constraint('<=', linear(varIds, a, c), other),
+  greaterThanOrEqual: other => constraint('<=', other, linear(varIds, a, c)),
+  equalTo: other => constraint('==', linear(varIds, a, c), other),
 });
 
-export const qpVar = (id: string): QPVar => ({
-  kind: 'var',
-  id,
-  plus: other => plus(qpVar(id), other),
-  minus: other => plus(qpVar(id), other.negate()),
-  negate: () => linear([id], [-1], 0),
-  squared: () => quadratic([id], [[1]], linear([], [], 0)),
-  times: other => times(qpVar(id), other),
-  equalTo: other => equalTo(qpVar(id), other),
-  lessThanOrEqual: other => lessThanOrEqual(qpVar(id), other),
-  greaterThanOrEqual: other => lessThanOrEqual(other, qpVar(id)),
+const quadratic = (varIds: string[], m: number[][], lin: QPLinear): QPQuadratic => ({
+  ...{ varIds, m, lin },
+  kind: 'quadratic',
+  plus: other => plus(quadratic(varIds, m, lin), other),
+  minus: other => plus(quadratic(varIds, m, lin), other.negate()),
+  negate: () => quadratic(varIds, m.map(l => l.map(x => -x)), lin.negate()),
+  lessThanOrEqual: other => constraint('<=', quadratic(varIds, m, lin), other),
+  greaterThanOrEqual: other => constraint('<=', other, quadratic(varIds, m, lin)),
+  equalTo: other => constraint('==', quadratic(varIds, m, lin), other),
 })
 
-const plus = (a: QPTerm, b: QPTerm): QPTerm => unimplemented();
-// other.kind === 'num' ? qpNum(value + other.value) : other.plus(qpNum(value))
+const constraint = (kind: QPConstraint['kind'], left: QPTerm, right: QPTerm): QPConstraint =>
+  ({ kind, left: left.minus(right), right: 0 });
 
-const times = (a: QPTerm, b: QPTerm): QPTerm => unimplemented();
+const plus = (a: QPTerm, b: QPTerm): QPTerm => matchByKind(a, {
+  linear: a => matchByKind(b, {
+    linear: b => addLin(a, b),
+    quadratic: b => ({ ...b, lin: addLin(b.lin, a) }),
+  }),
+  quadratic: a => matchByKind(b, {
+    linear: b => ({ ...a, lin: addLin(a.lin, b) }),
+    quadratic: b => addQuad(a, b),
+  }),
+});
 
-const linear = (varIds: string[], a: number[], c: number): QPLinear => unimplemented();
+const addLin = (a: QPLinear, b: QPLinear): QPLinear => {
+  const ids: string[] = [];
+  const params: number[] = [];
+  a.varIds.forEach((id, i) => {
+    const inB = b.varIds.indexOf(id);
+    ids.push(id);
+    if (inB === -1) { params.push(a.a[i]!); }
+    else { params.push(a.a[i]! + b.a[inB]!); }
+  });
+  b.varIds.forEach((id, i) => {
+    const inA = a.varIds.indexOf(id);
+    if (inA === -1) {
+      ids.push(id);
+      params.push(b.a[i]!);
+    }
+  });
+  return linear(ids, params, a.c + b.c);
+}
 
-const quadratic = (varIds: string[], m: number[][], lin: QPLinear): QPQuadratic => unimplemented();
+const addQuad = (a: QPQuadratic, b: QPQuadratic): QPQuadratic => unimplemented();
 
-const equalTo = (left: QPTerm, right: QPTerm): QPConstraint => unimplemented();
+const timesLin = (a: QPLinear, b: QPLinear): QPQuadratic => unimplemented();
 
-const lessThanOrEqual = (left: QPTerm, right: QPTerm): QPConstraint => unimplemented();
+export const unsupported = (op: string) => { throw new Error(`unsupported operation: ${op}`); }
