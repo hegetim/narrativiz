@@ -20,3 +20,4 @@ export const matchString = <K extends string, R>(k: K, body: { [P in K]: () => R
 }
 
 export const unimplemented = () => { throw new Error('not implemented'); }
+export const unreachable = () => { throw new Error('unreachable code'); }

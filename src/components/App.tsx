@@ -1,4 +1,5 @@
 import { master2storyline, sgbFile } from "../io/sgb"
+import { qpNum, qpVar, stringify } from "../model/QPSupport";
 
 export const App = (props: {}) => {
   console.log(master2storyline(sgbFile('loose', 'master').tryParse(`
@@ -27,6 +28,6 @@ BB Bamm-Bamm Rubble, called Bamm-Bamm, the Rubbles’ abnormally strong adopted 
 
 
 `)))
-
+  console.log(stringify(qpVar('x').plus(qpVar('y').scale(4).minus(qpNum(3)))))
   return "";
 }
