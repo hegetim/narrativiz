@@ -113,7 +113,7 @@ const qpqItems = (aIds: string[], bIds: string[]) => {
   return ids;
 }
 
-const getM = (m: number[][], i: number, j: number) => j < i ? m[i]![j]! : m[i]![j]!;
+const getM = (m: number[][], i: number, j: number) => j < i ? m[i]![j]! : m[j]![i]!;
 
 // fixme: something's wrong here :(
 const plusQ = (a: QPQuadratic, b: QPQuadratic): QPQuadratic => {
@@ -152,25 +152,35 @@ const timesLin = (a: QPLinear, b: QPLinear): QPQuadratic => {
   return quadratic(items.map(i => i.id), m, lin.minus(linear([], [], a.c * b.c)))
 }
 
-// REMEMBER: j <= i
-
-export const stringify = (t: QPTerm): string => matchByKind(t, {
-  linear: l => fmtL(l),
-  quadratic: q => fmtQ(q),
+const isZero = (t: QPTerm): boolean => matchByKind(t, {
+  linear: l => l.c === 0 && l.a.every(x => x === 0),
+  quadratic: q => isZero(q.lin) && q.m.every(r => r.every(x => x === 0)),
 })
 
-const fmtL = (l: QPLinear) => _.zip(l.varIds, l.a).reduceRight((s, [id, m]) => {
+// REMEMBER: j <= i
+
+export const stringify = (t: QPTerm | QPConstraint): string => matchByKind(t, {
+  linear: l => fmtL(l),
+  quadratic: q => fmtQ(q),
+  "<=": c => fmtC(c),
+  "==": c => fmtC(c),
+})
+
+const fmtL = (l: QPLinear) => _.zip(l.varIds, l.a).reduce((s, [id, m]) => {
   if (m === 0 || m === undefined) { return s; }
+  if (s === "" && m === 1) { return `${id}`; }
+  if (s === "" && m === -1) { return `- ${id}`; }
+  if (s === "") { return `${m} ${id}`; }
   if (m === 1) { return `${s} + ${id}`; }
   if (m === -1) { return `${s} - ${id}`; }
   if (m < 0) { return `${s} - ${-m} ${id}`; }
   else { return `${s} + ${m} ${id}`; }
-}, `${l.c}`);
+}, l.c !== 0 || l.a.every(x => x === 0) ? `${l.c}` : "");
 
 const fmtQ = (q: QPQuadratic) => {
   const quadraticPart = q.varIds
     .flatMap((a, i) => _.take(q.varIds, i + 1).map((b, j) => [a, b, q.m[i]![j]!] as const))
-    .reduceRight((s, [a, b, m]) => {
+    .reduce((s, [a, b, m]) => {
       if (m === 0 || m === undefined) { return s; }
       const vars = a === b ? `${a} ^ 2` : `${a} * ${b}`;
       if (s === "" && m === 1) { return vars; }
@@ -181,5 +191,16 @@ const fmtQ = (q: QPQuadratic) => {
       if (m < 0) { return `${s} - ${-m} ${vars}`; }
       else { return `${s} + ${m} ${vars}` }
     }, "");
-  return `${fmtL(q.lin)} + [ ${quadraticPart} ] / 2`
+  if (isZero(q.lin)) { return `[ ${quadraticPart} ] / 2`; }
+  else { return `${fmtL(q.lin)} + [ ${quadraticPart} ] / 2`; }
+}
+
+const splitConst = (t: QPTerm): [QPTerm, number] => matchByKind(t, {
+  linear: l => [linear(l.varIds, l.a, 0), l.c],
+  quadratic: q => [quadratic(q.varIds, q.m, linear(q.lin.varIds, q.lin.a, 0)), q.lin.c],
+});
+
+const fmtC = (c: QPConstraint) => {
+  const [term, num] = splitConst(c.left);
+  return `${stringify(term)} ${c.kind} ${c.right - num}`;
 }
