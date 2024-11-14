@@ -67,10 +67,10 @@ const constraint = (kind: QPConstraint['kind'], left: QPTerm, right: QPTerm): QP
 const plus = (a: QPTerm, b: QPTerm): QPQuadratic => matchByKind(a, {
   linear: a => matchByKind(b, {
     linear: b => quadratic([], [], plusL(a, b)),
-    quadratic: b => ({ ...b, lin: plusL(b.lin, a) }),
+    quadratic: b => quadratic(b.varIds, b.m, plusL(b.lin, a)),
   }),
   quadratic: a => matchByKind(b, {
-    linear: b => ({ ...a, lin: plusL(a.lin, b) }),
+    linear: b => quadratic(a.varIds, a.m, plusL(a.lin, b)),
     quadratic: b => plusQ(a, b),
   }),
 });
@@ -115,6 +115,7 @@ const qpqItems = (aIds: string[], bIds: string[]) => {
 
 const getM = (m: number[][], i: number, j: number) => j < i ? m[i]![j]! : m[i]![j]!;
 
+// fixme: something's wrong here :(
 const plusQ = (a: QPQuadratic, b: QPQuadratic): QPQuadratic => {
   const items = qpqItems(a.varIds, b.varIds);
   const m = items.map((i, idx) => _.take(items, idx + 1).map(j => {
@@ -154,6 +155,31 @@ const timesLin = (a: QPLinear, b: QPLinear): QPQuadratic => {
 // REMEMBER: j <= i
 
 export const stringify = (t: QPTerm): string => matchByKind(t, {
-  linear: l => _.zip(l.varIds, l.a).map(([id, m]) => `${m} ${id}`).join(" + ") + ` + ${l.c}`,
-  quadratic: q => ""
+  linear: l => fmtL(l),
+  quadratic: q => fmtQ(q),
 })
+
+const fmtL = (l: QPLinear) => _.zip(l.varIds, l.a).reduceRight((s, [id, m]) => {
+  if (m === 0 || m === undefined) { return s; }
+  if (m === 1) { return `${s} + ${id}`; }
+  if (m === -1) { return `${s} - ${id}`; }
+  if (m < 0) { return `${s} - ${-m} ${id}`; }
+  else { return `${s} + ${m} ${id}`; }
+}, `${l.c}`);
+
+const fmtQ = (q: QPQuadratic) => {
+  const quadraticPart = q.varIds
+    .flatMap((a, i) => _.take(q.varIds, i + 1).map((b, j) => [a, b, q.m[i]![j]!] as const))
+    .reduceRight((s, [a, b, m]) => {
+      if (m === 0 || m === undefined) { return s; }
+      const vars = a === b ? `${a} ^ 2` : `${a} * ${b}`;
+      if (s === "" && m === 1) { return vars; }
+      if (s === "" && m === -1) { return `- ${vars}`; }
+      if (s === "") { return `${m} ${vars}`; }
+      if (m === 1) { return `${s} + ${vars}` }
+      if (m === -1) { return `${s} - ${vars}`; }
+      if (m < 0) { return `${s} - ${-m} ${vars}`; }
+      else { return `${s} + ${m} ${vars}` }
+    }, "");
+  return `${fmtL(q.lin)} + [ ${quadraticPart} ] / 2`
+}

@@ -28,6 +28,12 @@ BB Bamm-Bamm Rubble, called Bamm-Bamm, the Rubbles’ abnormally strong adopted 
 
 
 `)))
-  console.log(stringify(qpVar('x').plus(qpVar('y').scale(4).minus(qpNum(3)))))
+  console.log(stringify(qpVar('x').plus(qpVar('y').scale(4).minus(qpNum(3))).squared()));
+  console.log(stringify(qpNum(1)
+    .plus(qpVar('x').plus(qpVar('y').scale(4).minus(qpNum(3))).squared())
+    .plus(qpVar("x").scale(5))
+    .plus(qpVar('z').minus(qpVar('y').scale(2)).squared())
+  ));
+  console.log(stringify(qpVar('z').minus(qpVar('y').scale(2)).squared()));
   return "";
 }
