@@ -46,6 +46,7 @@ module.exports = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js', '.html', '.ico'],
+        fallback: { path: false, fs: false, crypto: false },
     },
     output: {
         filename: '[name].js',

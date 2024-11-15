@@ -23,9 +23,9 @@ interface QPMethodsMulti {
 type QPLinear = { kind: 'linear', varIds: string[], a: number[], c: number } & QPMethods<QPLinear> & QPMethodsMulti;
 type QPQuadratic = { kind: 'quadratic', varIds: string[], m: number[][], lin: QPLinear } & QPMethods<QPQuadratic>;
 
-type QPTerm = QPLinear | QPQuadratic;
+export type QPTerm = QPLinear | QPQuadratic;
 
-type QPConstraint = {
+export type QPConstraint = {
   kind: '<=' | '=='
   left: QPTerm
   right: number
@@ -192,7 +192,7 @@ const fmtQ = (q: QPQuadratic) => {
       else { return `${s} + ${m} ${vars}` }
     }, "");
   if (isZero(q.lin)) { return `[ ${quadraticPart} ] / 2`; }
-  else { return `${fmtL(q.lin)} + [ ${quadraticPart} ] / 2`; }
+  else { return `${fmtL(q.lin.scale(0.5))} + [ ${quadraticPart} ] / 2`; }
 }
 
 const splitConst = (t: QPTerm): [QPTerm, number] => matchByKind(t, {
@@ -204,3 +204,15 @@ const fmtC = (c: QPConstraint) => {
   const [term, num] = splitConst(c.left);
   return `${stringify(term)} ${c.kind} ${c.right - num}`;
 }
+
+const uniqueIds = (ts: QPTerm[]) => _.uniq(ts.flatMap(t => matchByKind(t, {
+  linear: l => l.varIds,
+  quadratic: q => [...q.varIds, ...q.lin.varIds],
+})));
+
+export const fmtQP = (cs: QPConstraint[], obj: QPTerm, mode: 'max' | 'min') =>
+  `${mode === 'max' ? "Maximize" : "Minimize"}
+obj: ${stringify(obj)}
+Subject To
+${cs.map(stringify).join("\n")}
+End`;
