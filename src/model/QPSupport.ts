@@ -115,7 +115,6 @@ const qpqItems = (aIds: string[], bIds: string[]) => {
 
 const getM = (m: number[][], i: number, j: number) => j < i ? m[i]![j]! : m[j]![i]!;
 
-// fixme: something's wrong here :(
 const plusQ = (a: QPQuadratic, b: QPQuadratic): QPQuadratic => {
   const items = qpqItems(a.varIds, b.varIds);
   const m = items.map((i, idx) => _.take(items, idx + 1).map(j => {

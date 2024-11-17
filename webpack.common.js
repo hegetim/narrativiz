@@ -5,7 +5,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-// const CopyPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: './src/index.tsx',
@@ -16,12 +16,12 @@ module.exports = {
             chunks: ['main'],
         }),
         new MiniCssExtractPlugin(),
-        // new CopyPlugin({
-        //     patterns: [
-        //         { from: path.resolve(__dirname, 'src', 'static', 'imprint.csv'), to: path.resolve(__dirname, 'build') },
-        //         { from: path.resolve(__dirname, 'src', 'static', 'gh.svg'), to: path.resolve(__dirname, 'build') },
-        //     ]
-        // }),
+        new CopyPlugin({
+            patterns: [
+                { from: path.resolve(__dirname, 'node_modules', 'highs', 'build', 'highs.wasm'), to: path.resolve(__dirname, 'build') },
+                // { from: path.resolve(__dirname, 'src', 'static', 'gh.svg'), to: path.resolve(__dirname, 'build') },
+            ]
+        }),
     ],
     module: {
         rules: [

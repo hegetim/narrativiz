@@ -5,10 +5,11 @@
 import { StorylineRealization } from './Storyline';
 import { pushMMap, windows2 } from './Utils';
 import { fmtQP, QPConstraint, qpNum, qpVar } from './QPSupport';
+import highsLoader from 'highs';
 
 export type AlignCriterion = "sum-of-heights" | "least-squares";
 
-// const highs = highsLoader({ locateFile: (file: string) => "https://lovasoa.github.io/highs-js/" + file });
+const highs = highsLoader();
 
 type InGroup = { groupId: string, offset: number };
 
