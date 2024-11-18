@@ -3,7 +3,7 @@
  */
 
 import P from "parsimmon";
-import { RealizedLayer, Storyline, StorylineMetadata, StorylineRealization } from "../model/Storyline";
+import { Storyline, WithCharacterDescriptions, WithGroupDescriptions, WithLayerDescriptions, WithRealizedGroups } from "../model/Storyline";
 
 /// parse SGB (Stanford GraphBase) or master files
 
@@ -79,20 +79,35 @@ export const sgbFile = (strict: StrictT, dialect: 'sgb' | 'master'): P.Parser<Sg
 );
 
 // todo: char descriptions are discarded :(
-const chars = (f: SgbFile<SgbT>) => f.characters.reduce((map, c) => map.set(c.code, c.name), new Map<string, string>());
+const chars = (f: SgbFile<SgbT>) => f.characters.reduce((map, c) => map.set(c.code, c), new Map<string, SgbChar>());
 
 const meta = (f: SgbFile<SgbT>) => [f.layers.map(l => l.title), f.layers.map(l => l.groupDescriptions ?? [])] as const;
 
-export const sgb2storyline = (f: SgbFile<'sgb'>): readonly [Storyline, StorylineMetadata] => {
-  const layers = f.layers.map(l => ({ meetings: l.groups }));
-  const [layerDescriptions, meetingDescriptions] = meta(f);
-  return [{ layers }, { characterDescriptions: chars(f), layerDescriptions, meetingDescriptions }];
-}
+export type SgbStoryline = Storyline<WithGroupDescriptions, WithLayerDescriptions, WithCharacterDescriptions<SgbChar>>;
 
-export const master2storyline = (f: SgbFile<'master'>): readonly [StorylineRealization, StorylineMetadata] => {
-  const layers = f.layers.map<RealizedLayer>(l => ({
-    groups: l.groups.map(g => ({ type: g.every(id => l.active.some(x => x === id)) ? 'active' : 'inactive', ordered: g }))
-  }));
-  const [layerDescriptions, meetingDescriptions] = meta(f);
-  return [{ layers }, { characterDescriptions: chars(f), layerDescriptions, meetingDescriptions }];
-}
+export const sgb2storyline = (f: SgbFile<'sgb'>): SgbStoryline => ({
+  characterDescriptions: chars(f),
+  layers: f.layers.map(l => ({
+    groups: l.groups.map((g, i) => ({
+      characters: g,
+      groupDescription: (l.groupDescriptions ?? [])[i] ?? "",
+    })),
+    layerDescription: l.title
+  })),
+});
+
+export type MasterStoryline =
+  Storyline<WithRealizedGroups & WithGroupDescriptions, WithLayerDescriptions, WithCharacterDescriptions<SgbChar>>;
+
+export const master2storyline = (f: SgbFile<'master'>): MasterStoryline => ({
+  characterDescriptions: chars(f),
+  layers: f.layers.map(l => ({
+    groups: l.groups.map((g, i) => ({
+      kind: g.every(id => l.active.some(x => x === id)) ? 'active' : 'inactive',
+      characters: g,
+      charactersOrdered: g,
+      groupDescription: (l.groupDescriptions ?? [])[i] ?? "",
+    })),
+    layerDescription: l.title,
+  })),
+});

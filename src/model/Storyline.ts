@@ -2,31 +2,33 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-export interface Storyline {
-  layers: StorylineLayer[]
+export type Storyline<G = {}, L = {}, S = {}> = {
+  layers: (StorylineLayer<G> & L)[]
+} & S;
+
+export interface StorylineLayer<G> {
+  groups: (StorylineGroup & G)[]
 }
 
-export interface StorylineLayer {
-  meetings: string[][]
+export interface StorylineGroup {
+  characters: string[]
 }
 
-export interface StorylineRealization {
-  layers: RealizedLayer[]
+export type WithRealizedGroups = { kind: 'active' | 'inactive', charactersOrdered: string[] };
+
+export type WithAlignedGroups = WithRealizedGroups & { atY: number };
+
+export type WithCharacterDescriptions<T = string> = {
+  characterDescriptions: Map<string, T>
 }
 
-export interface RealizedLayer {
-  groups: { type: 'active' | 'inactive', ordered: string[] }[]
+export type WithLayerDescriptions = {
+  layerDescription: string;
 }
 
-export interface StorylineDrawing {
-  layers: { character: string, y: number, groupId: number }[][]
+export type WithGroupDescriptions = {
+  groupDescription: string
 }
 
-export interface StorylineMetadata {
-  characterDescriptions: Map<string, string>
-  layerDescriptions: string[]
-  meetingDescriptions: string[][]
-}
-
-export const realization2storyline = (r: StorylineRealization) =>
-  ({ layers: r.layers.map(l => ({ meetings: l.groups.filter(g => g.type === 'active').map(g => g.ordered) })) });
+// export const realization2storyline = (r: StorylineRealization): Storyline =>
+//   ({ layers: r.layers.map(l => ({ groups: l.groups.filter(g => g.kind === 'active').map(g => g.ordered) })) });
