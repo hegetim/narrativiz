@@ -50,15 +50,18 @@ const optSqr = (cl: CharLines) => cl.values()
 // todo: add proper error handling
 const solve = async (r: Realization, cl: CharLines, yc: QPConstraint[]): Promise<Aligned | undefined> => {
   const highs = await highsLoader();
-  const sol = highs.solve(fmtQP(yc, optSqr(cl), 'min'));
-  if (sol.Status === 'Optimal') {
+  const instance = fmtQP(yc, optSqr(cl), 'min');
+  console.log(instance);
+  const solution = highs.solve(instance);
+  console.log(solution);
+  if (solution.Status === 'Optimal') {
     return {
       ...r,
       layers: r.layers.map((layer, i) => ({
         ...layer,
         groups: layer.groups.map((group, j) => ({
           ...group,
-          atY: sol.Columns[`l${i}g${j}`]?.Primal!,
+          atY: solution.Columns[`l${i}g${j}`]?.Primal!,
         })),
       })),
     };
