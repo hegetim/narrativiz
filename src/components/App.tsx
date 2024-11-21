@@ -1,7 +1,10 @@
+import React, { useEffect, useState } from "react";
 import { master2storyline, sgbFile } from "../io/sgb"
 import { align, sample } from "../model/Align";
 import { backToTheFuture } from "../model/Data";
 import { qpNum, qpVar, stringify } from "../model/QPSupport";
+import { DebugAlignedComponent } from "./DebugAligned";
+import { Storyline, WithAlignedGroups } from "../model/Storyline";
 
 export const App = (props: {}) => {
   console.log(master2storyline(sgbFile('loose', 'master').tryParse(`
@@ -40,6 +43,17 @@ BB Bamm-Bamm Rubble, called Bamm-Bamm, the Rubbles’ abnormally strong adopted 
   console.log(stringify(qpVar('x').scale(8).greaterThanOrEqual(qpVar('y').plus(qpNum(3)).scale(-1.5))))
   const sample = master2storyline(sgbFile('loose', 'master').tryParse(backToTheFuture));
   console.log(sample);
-  align(sample, 'least-squares', 2).then(console.log);
-  return "";
+
+  const [story, setStory] = useState<Storyline<WithAlignedGroups> | undefined>(undefined);
+  useEffect(() => {
+    align(sample, 'least-squares', 5).then(setStory);
+  }, []);
+
+  console.log({ story });
+
+  if (story) {
+    return <DebugAlignedComponent story={story} />;
+  } else {
+    return "";
+  }
 }

@@ -3,10 +3,11 @@
  */
 
 import { Storyline, WithAlignedGroups, WithRealizedGroups } from './Storyline';
-import { pushMMap, windows2 } from './Utils';
-import { fmtQP, QPConstraint, qpNum, qpVar } from './QPSupport';
-import highsLoader from 'highs';
+import { matchString, pushMMap, windows2 } from './Utils';
+import { fmtQP, QPConstraint, qpNum, QPTerm, qpVar } from './QPSupport';
 import { master2storyline, sgbFile } from '../io/sgb';
+import highsLoader from 'highs';
+import _ from 'lodash';
 
 export type AlignCriterion = "sum-of-heights" | "least-squares";
 
@@ -38,7 +39,13 @@ export const align = async (r: Realization, mode: AlignCriterion, gapRatio: numb
     });
   });
 
-  return solve(r, characters, yConstraints);
+  return matchString(mode, {
+    "least-squares": () => solve(r, fmtQP(yConstraints, optSqr(characters), 'min')),
+    "sum-of-heights": () => {
+      const [zConstraints, obj] = mkSumOfHeights(characters);
+      return solve(r, fmtQP(yConstraints.concat(...zConstraints), obj, 'min'));
+    },
+  });
 }
 
 const optSqr = (cl: CharLines) => cl.values()
@@ -47,10 +54,24 @@ const optSqr = (cl: CharLines) => cl.values()
   ))
   .reduce((a, b) => a.plus(b));
 
+const mkSumOfHeights = (cl: CharLines): [QPConstraint[], QPTerm] => {
+  const constraints = [...cl.values()
+    .flatMap(line => windows2(line))
+    .flatMap(([p, q], i) => {
+      const a = qpVar(p.groupId).plus(qpNum(p.offset));
+      const b = qpVar(q.groupId).plus(qpNum(q.offset));
+      const z = qpVar(`z${i}`);
+      return [a.minus(b).lessThanOrEqual(z), b.minus(a).lessThanOrEqual(z)];
+    })];
+  const opt = _.range(0, constraints.length / 2).reduce((sum, i) => sum.plus(qpVar(`z${i}`)), qpNum(0));
+  return [constraints, opt];
+}
+
 // todo: add proper error handling
-const solve = async (r: Realization, cl: CharLines, yc: QPConstraint[]): Promise<Aligned | undefined> => {
+// todo: proper generic typing
+const solve = async (r: Realization, instance: string): Promise<Aligned | undefined> => {
   const highs = await highsLoader();
-  const instance = fmtQP(yc, optSqr(cl), 'min');
+  // const instance = fmtQP(yc, optSqr(cl), 'min');
   console.log(instance);
   const solution = highs.solve(instance);
   console.log(solution);
