@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { master2storyline, sgbFile } from "../io/sgb"
-import { align, sample } from "../model/Align";
-import { backToTheFuture } from "../model/Data";
+import { align } from "../model/Align";
+import { backToTheFuture, superSmall } from "../model/Data";
 import { qpNum, qpVar, stringify } from "../model/QPSupport";
 import { DebugAlignedComponent } from "./DebugAligned";
 import { Storyline, WithAlignedGroups } from "../model/Storyline";
@@ -46,7 +46,7 @@ BB Bamm-Bamm Rubble, called Bamm-Bamm, the Rubbles’ abnormally strong adopted 
 
   const [story, setStory] = useState<Storyline<WithAlignedGroups> | undefined>(undefined);
   useEffect(() => {
-    align(sample, 'least-squares', 5).then(setStory);
+    align(sample, 'least-squares', 1).then(setStory);
   }, []);
 
   console.log({ story });

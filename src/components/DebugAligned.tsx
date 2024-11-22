@@ -8,7 +8,7 @@ import { pushMMap } from "../model/Utils";
 
 const layerXDist = 100;
 const layerWidth = 20;
-const oneDistance = 10;
+const oneDistance = 40;
 
 interface Props {
   story: Storyline<WithAlignedGroups>

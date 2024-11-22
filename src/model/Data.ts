@@ -1,3 +1,12 @@
+export const superSmall = `*
+AA a
+BB b
+CC c
+
+1: AA,BB,CC: AA,BB,CC
+2: CC,AA: CC,AA
+3: CC,DD,AA: CC,DD,AA`;
+
 export const backToTheFuture = `* BackToTheFuture
 MM Marty McFly
 DB Dr Emmett Brown

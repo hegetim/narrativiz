@@ -5,7 +5,6 @@
 import { Storyline, WithAlignedGroups, WithRealizedGroups } from './Storyline';
 import { matchString, pushMMap, windows2 } from './Utils';
 import { fmtQP, QPConstraint, qpNum, QPTerm, qpVar } from './QPSupport';
-import { master2storyline, sgbFile } from '../io/sgb';
 import highsLoader from 'highs';
 import _ from 'lodash';
 
@@ -71,6 +70,7 @@ const mkSumOfHeights = (cl: CharLines): [QPConstraint[], QPTerm] => {
 // todo: proper generic typing
 const solve = async (r: Realization, instance: string): Promise<Aligned | undefined> => {
   const highs = await highsLoader();
+  // const highs = await highsLoader({ locateFile: file => `https://lovasoa.github.io/highs-js/${file}` });
   // const instance = fmtQP(yc, optSqr(cl), 'min');
   console.log(instance);
   const solution = highs.solve(instance);
@@ -88,13 +88,3 @@ const solve = async (r: Realization, instance: string): Promise<Aligned | undefi
     };
   } else return undefined;
 }
-
-const input = `*
-AA a
-BB b
-CC c
-
-1: AA,BB,CC: AA,BB,CC
-2: CC,AA: CC,AA
-3: CC,DD,AA: CC,DD,AA`;
-export const sample: Realization = master2storyline(sgbFile('loose', 'master').tryParse(input));
