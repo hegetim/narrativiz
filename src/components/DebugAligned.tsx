@@ -4,7 +4,8 @@
 
 import React from "react";
 import { Storyline, WithAlignedGroups } from "../model/Storyline";
-import { pushMMap } from "../model/Utils";
+import { pushMMap, unimplemented } from "../model/Utils";
+import { sPathFrag } from "./DrawingUtils";
 
 const layerXDist = 100;
 const layerWidth = 20;
@@ -14,16 +15,35 @@ interface Props {
   story: Storyline<WithAlignedGroups>
 }
 
+type Item = {
+  at: readonly [number, number],
+  blockSize: number,
+  offset: number,
+}
+
 export const DebugAlignedComponent = ({ story }: Props) => {
   const buf: Map<string, (readonly [number, number])[]> = new Map();
+  const frags: Map<string, string[]> = new Map();
+  const items: Map<string, Item> = new Map();
 
   story.layers.forEach((layer, i) => {
     layer.groups.forEach(group => {
+      const blockSize = (group.characters.length - 1) * oneDistance;
       group.charactersOrdered.forEach((char, j) => {
         const x = i * (layerXDist + layerWidth);
         const y = (j + group.atY) * oneDistance;
         pushMMap(buf, char, [x, y] as const);
         pushMMap(buf, char, [x + layerWidth, y] as const);
+
+        const prev = items.get(char);
+        items.set(char, { at: [x + layerWidth, y], blockSize, offset: (i + 1) / group.characters.length });
+        if (prev) {
+          // todo: join blocks!
+          pushMMap(frags, char, sPathFrag(layerWidth, y - prev.at[1], unimplemented(), unimplemented()));
+          pushMMap(frags, char, `h ${layerWidth}`);
+        } else {
+          pushMMap(frags, char, `M ${x} ${y} h ${layerWidth}`);
+        }
       })
     })
   })
