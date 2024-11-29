@@ -72,7 +72,7 @@ const solve = async (r: Realization, instance: string): Promise<Aligned | undefi
   const highs = await highsLoader();
   // const highs = await highsLoader({ locateFile: file => `https://lovasoa.github.io/highs-js/${file}` });
   // const instance = fmtQP(yc, optSqr(cl), 'min');
-  console.log(instance);
+  // console.log(instance);
   const solution = highs.solve(instance);
   console.log(solution);
   if (solution.Status === 'Optimal') {

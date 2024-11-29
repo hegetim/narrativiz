@@ -109,4 +109,31 @@ RB Red Thomas  the Bum
 6333 : JP;BT;GM;LB;LM;DM;DB,MM,TD,TE : MM,DB,TE,TD
 6400 : JP;BT;GM;LB;LM;DM;DB,MM : MM,DB
 6477 : JP,BT,GM,LB,DB;LM;DM;MM : GM,LB,BT,JP,DB
-6709 : JP,BT,GM,LB,DB,LM,DM,MM : MM,DM,LM,GM,LB,BT,JP,DB`
+6709 : JP,BT,GM,LB,DB,LM,DM,MM : MM,DM,LM,GM,LB,BT,JP,DB`;
+
+export const flintstones = `
+* A freely invented storyline of a possible "The Flintstones" cartoon
+* It serves as an example for a storyline master file.
+
+
+  FF Fred Flintstone, called Fred, bronto-crane operator
+WF Wilma Flintstone, called Wilma, wife of Fred Flintstone
+*
+PF Pebbles Flintstone, called Pebbles, the Flintstones’ infant daughter
+BR Bernard Matthew Rubble, called Barney, Fred’s best friend and next-door neighbor
+* test
+ER Elizabeth Jean Rubble, called Betty, Barney’s wife and Wilma’s best friend
+BB Bamm-Bamm Rubble, called Bamm-Bamm, the Rubbles’ abnormally strong adopted son
+
+1 2 : FF : FF
+* incomplete layer description
+2 : WF,BR;FF,ER,BB :WF,BR,FF,ER,BB
+  3 : WF,FF;PF;BR,ER;BB : WF,FF,PF,BR,ER
+44 : BR,ER;WF,FF;PF;BB : BR,ER,WF,FF,PF
+* this is a layer description
+* group1   ;  group two
+5454565341234513452345 : PF,FF;ER,BR,BB : PF,FF,ER,BR,BB
+* end of file
+
+
+`;
