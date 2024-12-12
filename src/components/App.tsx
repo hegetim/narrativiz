@@ -21,7 +21,7 @@ export const App = (props: {}) => {
 
   const [story, setStory] = useState<Storyline<WithAlignedGroups> | undefined>(undefined);
   useEffect(() => {
-    align(sample, 'sum-of-heights', 3).then(setStory);
+    align(sample, 'sum-of-heights', 1).then(setStory);
   }, []);
 
   console.log({ story });

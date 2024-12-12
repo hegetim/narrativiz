@@ -9,7 +9,7 @@ import { sPathFrag } from "./DrawingUtils";
 
 const layerXDist = 100;
 const layerWidth = 20;
-const oneDistance = 10;
+const oneDistance = 20;
 
 interface Props {
   story: Storyline<WithAlignedGroups>
