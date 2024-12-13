@@ -7,6 +7,20 @@ CC c
 2: CC,AA: CC,AA
 3: CC,DD,AA: CC,DD,AA`;
 
+export const stair = `*
+ZZ step
+A1 a1
+A2 a2
+B1 b1
+B2 b2
+C1 c1
+C2 c2
+
+1: A1,A2,ZZ : A1,A2,ZZ
+2: B1,B2,ZZ,A1,A2 : B1,B2,ZZ,A1,A2
+3: C1,C2,ZZ,B1,B2 : C1,C2,ZZ,B1,B2
+4: ZZ,C1,C2 : ZZ,C1,C2`
+
 export const backToTheFuture = `* BackToTheFuture
 MM Marty McFly
 DB Dr Emmett Brown
