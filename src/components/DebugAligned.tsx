@@ -4,8 +4,9 @@
 
 import React from "react";
 import { Storyline, WithAlignedGroups } from "../model/Storyline";
-import { pushMMap } from "../model/Utils";
+import { matchByKind, pushMMap } from "../model/Utils";
 import { sPathFrag } from "./DrawingUtils";
+import { DrawingFrag, justifyLayers, SLine } from "../model/Justify";
 
 const layerXDist = 100;
 const layerWidth = 20;
@@ -51,7 +52,7 @@ export const DebugAlignedComponent = ({ story }: Props) => {
             pushMMap(frags, char, `H ${x + layerWidth}`);
           } else {
             const [jointBlockSize, jointOffset] = joinBlocks(prev.blockSize, prev.offset, blockSize, offset);
-            pushMMap(frags, char, sPathFrag(layerXDist, y - prev.at[1], jointBlockSize, jointOffset));
+            pushMMap(frags, char, sPathFrag({ dx: layerXDist, dy: y - prev.at[1], bs: jointBlockSize, offset: jointOffset }));
             pushMMap(frags, char, `h ${layerWidth}`);
           }
         } else {
@@ -60,6 +61,9 @@ export const DebugAlignedComponent = ({ story }: Props) => {
       })
     })
   })
+
+  const justified = justifyLayers(story)
+  console.log({ justified })
 
   const [width, _height, vbox] = bbox([...buf.values()].flat())
 
@@ -76,11 +80,30 @@ export const DebugAlignedComponent = ({ story }: Props) => {
       )]}
       {meetings.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)}
     </svg>
+    <svg viewBox={vbox} width={width}>{drawFrags(justified)}</svg>
   </React.Fragment>;
 }
 
+const drawFrags = (frags: DrawingFrag[]) => {
+  const pathFrags: Map<string, string[]> = new Map();
+  const meetingFrags: string[] = [];
+
+  frags.forEach(frag => matchByKind(frag, {
+    "char-init": ci => pushMMap(pathFrags, ci.char.id, `M ${ci.pos.x} ${ci.pos.y} h ${ci.dx}`),
+    "char-line": cl => pushMMap(pathFrags, cl.char.id, sPathFrag(cl.sLine), `h ${cl.dx - cl.sLine.dx}`),
+    meeting: m => meetingFrags.push(meeting([m.pos.x + m.dx / 2, m.pos.y], m.dx / 3, m.dy)),
+  }));
+
+  return <React.Fragment>
+    {[...pathFrags.entries().map(([id, frags]) =>
+      <path key={id} d={frags.join(" ")} stroke="black" strokeWidth={2} fill="none" />
+    )]}
+    {meetingFrags.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)}
+  </React.Fragment>
+}
+
 const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: number) => {
-  console.info(`join blocks: l=${sizeL} @ ${offsetL}  r=${sizeR} @ ${offsetR}`)
+  // console.info(`join blocks: l=${sizeL} @ ${offsetL}  r=${sizeR} @ ${offsetR}`)
   if (sizeL === sizeR && sizeL === 0) return [0, 0] as const;
   const top = Math.max(sizeL * offsetL, sizeR * offsetR);
   const btm = Math.max(sizeL * (1 - offsetL), sizeR * (1 - offsetR));

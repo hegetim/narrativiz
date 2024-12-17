@@ -19,10 +19,10 @@ export const matchString = <K extends string, R>(k: K, body: { [P in K]: () => R
   return body[k]();
 }
 
-export const pushMMap = <K, T>(mmap: Map<K, T[]>, key: K, item: T) => {
+export const pushMMap = <K, T>(mmap: Map<K, T[]>, key: K, ...items: T[]) => {
   const bag = mmap.get(key);
-  if (bag) { bag.push(item); }
-  else { mmap.set(key, [item]); }
+  if (bag) { bag.push(...items); }
+  else { mmap.set(key, items); }
 }
 
 export const unimplemented = () => { throw new Error('not implemented'); }
