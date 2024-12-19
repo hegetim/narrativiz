@@ -25,5 +25,7 @@ export const pushMMap = <K, T>(mmap: Map<K, T[]>, key: K, ...items: T[]) => {
   else { mmap.set(key, items); }
 }
 
+export const ifDefined = <T, R>(t: T | undefined, f: (t: T) => R): R | undefined => t === undefined ? undefined : f(t);
+
 export const unimplemented = () => { throw new Error('not implemented'); }
 export const unreachable = () => { throw new Error('unreachable code'); }

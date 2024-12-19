@@ -6,7 +6,7 @@ import React from "react";
 import { Storyline, WithAlignedGroups } from "../model/Storyline";
 import { matchByKind, pushMMap } from "../model/Utils";
 import { sPathFrag } from "./DrawingUtils";
-import { DrawingFrag, justifyLayers, SLine } from "../model/Justify";
+import { corners, DrawingFrag, justifyLayers, SLine } from "../model/Justify";
 
 const layerXDist = 100;
 const layerWidth = 20;
@@ -80,18 +80,19 @@ export const DebugAlignedComponent = ({ story }: Props) => {
       )]}
       {meetings.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)}
     </svg>
-    <svg viewBox={vbox} width={width}>{drawFrags(justified)}</svg>
+    <svg viewBox={bbox(justified.flatMap(corners), oneDistance)[2]} width={width}>{drawFrags(justified)}</svg>
   </React.Fragment>;
 }
 
 const drawFrags = (frags: DrawingFrag[]) => {
   const pathFrags: Map<string, string[]> = new Map();
   const meetingFrags: string[] = [];
+  const s = oneDistance;
 
   frags.forEach(frag => matchByKind(frag, {
-    "char-init": ci => pushMMap(pathFrags, ci.char.id, `M ${ci.pos.x} ${ci.pos.y} h ${ci.dx}`),
-    "char-line": cl => pushMMap(pathFrags, cl.char.id, sPathFrag(cl.sLine), `h ${cl.dx - cl.sLine.dx}`),
-    meeting: m => meetingFrags.push(meeting([m.pos.x + m.dx / 2, m.pos.y], m.dx / 3, m.dy)),
+    "char-init": ci => pushMMap(pathFrags, ci.char.id, `M ${ci.pos.x * s} ${ci.pos.y * s} h ${ci.dx * s}`),
+    "char-line": cl => pushMMap(pathFrags, cl.char.id, sPathFrag(scale(cl.sLine, s)), `h ${(cl.dx - cl.sLine.dx) * s}`),
+    meeting: m => meetingFrags.push(meeting([(m.pos.x + m.dx / 2) * s, m.pos.y * s], m.dx * s / 3, m.dy * s)),
   }));
 
   return <React.Fragment>
@@ -101,6 +102,8 @@ const drawFrags = (frags: DrawingFrag[]) => {
     {meetingFrags.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)}
   </React.Fragment>
 }
+
+const scale = ({ dx, dy, bs, offset }: SLine, s: number): SLine => ({ dx: s * dx, dy: s * dy, bs: s * bs, offset });
 
 const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: number) => {
   // console.info(`join blocks: l=${sizeL} @ ${offsetL}  r=${sizeR} @ ${offsetR}`)
@@ -113,10 +116,10 @@ const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: numb
 const mkPolyline = (pt: readonly [number, number], pts: (readonly [number, number])[]) =>
   pts.reduce((str, [x, y]) => `${str} L ${x} ${y}`, `M ${pt[0]} ${pt[1]}`);
 
-const bbox = (pts: (readonly [number, number])[]) => {
+const bbox = (pts: (readonly [number, number])[], s: number = 1) => {
   const width = Math.max(...pts.map(p => p[0]));
   const height = Math.max(...pts.map(p => p[1]));
-  return [width, height, `-5 -5 ${width + 10} ${height + 10}`] as const;
+  return [width * s, height * s, `-10 -10 ${width * s + 20} ${height * s + 20}`] as const;
 }
 
 const meeting = (top: readonly [number, number], r: number, h: number) =>

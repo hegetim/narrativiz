@@ -1,86 +1,81 @@
-import _ from "lodash";
+import _, { invokeMap } from "lodash";
 import { Storyline, WithAlignedGroups } from "./Storyline";
-import { matchByKind } from "./Utils";
+import { ifDefined, matchByKind, windows2 } from "./Utils";
 
-const groupSpacing = 20; // space between group members
-const minRadius = 5;
-const meetingWidth = 20;
+// const groupSpacing = 20; // space between group members
+const minRadius = 0.25;
+const meetingWidth = 1;
 const eps = 1e-6;
 
 
 // fixme: in-slope != out-slope :(
 export const justifyLayers = (s: Storyline<WithAlignedGroups>): DrawingFrag[] => {
-  const state = new Map<string, { y: number, bs: number, offset: number }>();
-
-  const stage3: Stage3[][] = s.layers.map(layer => {
-    const stage1: Stage1[] = layer.groups.flatMap(group =>
-      group.charactersOrdered.map((char, i) => {
-        const y = (group.atY + i) * groupSpacing;
-        const y0 = state.get(char)?.y;
-        return { char, y, dy: y0 === undefined ? NaN : y - y0, inMeeting: group.kind === 'active' };
-      })
-    );
-
-    console.log({ stage1 })
-
-    let rem = { idx: 0, y: NaN, slope: 0 };
-    const stage2: Stage2[] = [];
-    for (let i of _.range(0, stage1.length + 1)) {
-      const s1 = stage1[i];
-      if (s1 !== undefined) {
-        stage2.push({ ...s1, bs: 0, offset: 0, w: mkWidth(s1.dy, 0) + (s1.inMeeting ? meetingWidth : 0) });
-      }
-      if (rem.slope === 0 && s1 !== undefined) { rem = { idx: i, y: s1.y, slope: slope2slope(s1.dy) }; }
-      else if (rem.slope !== slope2slope(s1?.dy ?? 0)) {
-        const bsR = stage1[i - 1]!.y - rem.y;
-        for (let j of _.range(rem.idx, i)) {
-          const item = stage2[j]!
-          const { y: _ignored, bs: bsL, offset: oL } = state.get(item.char)!;
-          const oR = (item.y - rem.y) / bsR;
-          console.info(`${rem.idx} -> ${j} -> ${i} [L=${bsL}@${oL},R=${bsR}@${oR}]`)
-          const [bs, offset] = joinBlocks(bsL, oL, bsR, oR);
-          item.bs = bs;
-          item.offset = offset;
-          item.w = mkWidth(item.dy, bs) + (item.inMeeting ? meetingWidth : 0);
-          state.set(item.char, { y: item.y, bs: bsR, offset: oR });
-        }
-        if (s1 !== undefined) { rem = { idx: i, y: s1.y, slope: slope2slope(s1.dy) }; }
-      }
-      if (s1 !== undefined && slope2slope(s1.dy) === 0) { state.set(s1.char, { y: s1.y, bs: 0, offset: 0 }); }
-    }
-
-    return _.concat<Stage3>(
-      stage2.map(item => Number.isNaN(item.dy) ? { kind: 'initChar', ...item } : { kind: 'charLine', ...item }),
-      layer.groups.filter(g => g.kind === 'active')
-        .map(g => ({ kind: 'meeting', y: g.atY * groupSpacing, h: (g.characters.length - 1) * groupSpacing, w: meetingWidth })),
+  const layers: Stage1A[][] = s.layers.map(layer =>
+    layer.groups.flatMap(group =>
+      group.charactersOrdered.map((char, j) => ({ char, inMeeting: group.kind === 'active', y: group.atY + j }))
     )
-  });
+  );
 
-  const layerWidth = Math.max(...stage3.flatMap(items => items.map(i => i.w)));
-  return stage3.flatMap((items, layer) => items.map(item => matchByKind(item, {
-    initChar: ic => ({
-      kind: 'char-init',
-      char: { id: ic.char, inMeeting: ic.inMeeting },
-      pos: { x: (layer + 1) * layerWidth - meetingWidth, y: ic.y },
+  const betweenLayers: Stage1B[][] = [...windows2(layers)].map(([left, right]) => right.map(r => {
+    const l = _.find(left, x => x.char === r.char);
+    return { char: r.char, inMeeting: r.inMeeting, yl: l?.y, yr: r.y };
+  }));
+
+  const firstLayer: Stage2A[] = layers[0]!.map(x => ({ ...x, kind: 'char-init' }));
+
+  const otherLayers: Stage2A[][] = _.zip(_.initial(layers), betweenLayers).map(([left, right]) => {
+    if (!left || !right) { throw new Error(`layer undefined: l=${left} r=${right}`) } else {
+      const leftBlocks = mkBlocks(
+        left,
+        l => slope2slope(ifDefined(right.find(r => l.char === r.char), dy) ?? NaN),
+        l => l.y
+      );
+      const rightBlocks = mkBlocks(right, r => slope2slope(dy(r)), r => r.yr);
+
+      return rightBlocks.map(r => {
+        if (r.yl === undefined) { return { kind: 'char-init', char: r.char, y: r.yr, inMeeting: r.inMeeting }; }
+        else {
+          const l = leftBlocks.find(x => x.char === r.char)!;
+          const [bs, offset] = joinBlocks(l.bs, l.offset, r.bs, r.offset);
+          return { kind: 'char-line', char: r.char, inMeeting: r.inMeeting, y: r.yl, dy: r.yr - r.yl, bs, offset };
+        }
+      });
+    }
+  })
+
+  const layerWidth = Math.max(...otherLayers.flatMap(layer => layer.map<number>(item => matchByKind(item, {
+    "char-init": _0 => meetingWidth,
+    "char-line": cl => mkWidth(cl.dy, cl.bs) + (cl.inMeeting ? meetingWidth : 0),
+  }))));
+
+  return [
+    ...[firstLayer, ...otherLayers].flatMap((layer, i) => layer.map<DrawingFrag>(item => matchByKind(item, {
+      "char-init": ci => ({
+        kind: "char-init",
+        char: { id: ci.char, inMeeting: ci.inMeeting },
+        pos: { x: (i + 1) * layerWidth - meetingWidth, y: ci.y },
+        dx: meetingWidth,
+      }),
+      "char-line": cl => ({
+        kind: "char-line",
+        char: { id: cl.char, inMeeting: cl.inMeeting },
+        pos: { x: i * layerWidth, y: cl.y },
+        sLine: { dx: cl.inMeeting ? layerWidth - meetingWidth : layerWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
+        dx: layerWidth,
+      }),
+    }))),
+    ...s.layers.flatMap((layer, i) => layer.groups.filter(g => g.kind === 'active').map(g => ({
+      kind: "meeting" as const,
+      pos: { x: (i + 1) * layerWidth - meetingWidth, y: g.atY },
       dx: meetingWidth,
-    }),
-    charLine: cl => ({
-      kind: 'char-line',
-      char: { id: cl.char, inMeeting: cl.inMeeting },
-      pos: { x: layer * layerWidth, y: cl.y },
-      sLine: { dx: cl.inMeeting ? layerWidth - meetingWidth : layerWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
-      dx: layerWidth,
-    }),
-    meeting: m => ({
-      kind: 'meeting',
-      pos: { x: (layer + 1) * layerWidth - meetingWidth, y: m.y },
-      dx: meetingWidth,
-      dy: m.h,
-    }),
-  })));
+      dy: g.characters.length - 1,
+    }))),
+  ];
 }
 
-const slope2slope = (x: number) => Math.abs(x) > eps ? Math.sign(x) : 0;
+const slope2slope = (x: number): -1 | 0 | 1 => Math.abs(x) > eps ? (x > 0 ? 1 : -1) : 0;
+
+const dy = (s: Stage1B) => s.yl === undefined ? NaN : s.yr - s.yl
 
 const mkWidth = (dy: number, bs: number) => {
   if (Number.isNaN(dy)) { return 0; }
@@ -97,17 +92,55 @@ const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: numb
   return [top + btm, top / (top + btm)] as const;
 }
 
-export const bbox = (frag: DrawingFrag): BBox => matchByKind(frag, {
-  "char-init": ci => ({ ...ci.pos, dx: ci.dx, dy: 0 }),
-  "char-line": cl => ({ ...cl.pos, dx: cl.dx, dy: cl.sLine.dy }),
-  meeting: m => ({ ...m.pos, dx: m.dx, dy: m.dy }),
+const mkBlocks = <T extends {}>(
+  ts: T[],
+  slope: (t: T) => -1 | 0 | 1,
+  y: (t: T) => number,
+): (T & { bs: number, offset: number })[] => {
+  const rem: (T & { slope?: -1 | 0 | 1 | undefined })[] = [...ts];
+  const res: (T & { bs: number, offset: number })[] = [];
+  let i = 0, j = 0;
+  while (i <= ts.length) {
+    const itemI = rem[i];
+    if (itemI !== undefined) { itemI.slope = slope(itemI); }
+    if (itemI?.slope !== rem[j]!.slope) {
+      const y0 = y(rem[j]!)
+      const bs = y(rem[i - 1]!) - y0;
+      while (j !== i) {
+        res.push({ ...ts[j]!, bs: bs, offset: bs === 0 ? 0 : (y(rem[j]!) - y0) / bs });
+        j++;
+      }
+    }
+    i++;
+  }
+  return res;
+}
+
+export const corners = (frag: DrawingFrag): (readonly [number, number])[] => matchByKind(frag, {
+  "char-init": ci => [[ci.pos.x, ci.pos.y], [ci.pos.x + ci.dx, ci.pos.y]],
+  "char-line": cl => [
+    [cl.pos.x, cl.pos.y],
+    [cl.pos.x + cl.dx, cl.pos.y],
+    [cl.pos.x, cl.pos.y + cl.sLine.dy],
+    [cl.pos.x + cl.dx, cl.pos.y + cl.sLine.dy]
+  ],
+  meeting: m => [
+    [m.pos.x, m.pos.y],
+    [m.pos.x + m.dx, m.pos.y],
+    [m.pos.x, m.pos.y + m.dy],
+    [m.pos.x + m.dx, m.pos.y + m.dy],
+  ],
 })
 
-type Stage1 = { char: string, y: number, dy: number, inMeeting: boolean };
-type Stage2 = Stage1 & { bs: number, offset: number, w: number };
-type Stage3 = { kind: 'initChar' } & Omit<Stage2, 'dy'>
-  | { kind: 'charLine' } & Stage2
-  | { kind: 'meeting', y: number, w: number, h: number };
+type Stage1A = { char: string, y: number, inMeeting: boolean };
+type Stage1B = Omit<Stage1A, 'y'> & { yl: number | undefined, yr: number };
+type Stage2A = Stage1A & ({ kind: 'char-init' } | { kind: 'char-line', dy: number, bs: number, offset: number })
+
+// type Stage1 = { char: string, y: number, dy: number, inMeeting: boolean };
+// type Stage2 = Stage1 & { bs: number, offset: number, w: number };
+// type Stage3 = { kind: 'initChar' } & Omit<Stage2, 'dy'>
+//   | { kind: 'charLine' } & Stage2
+//   | { kind: 'meeting', y: number, w: number, h: number };
 
 export type Pos = { x: number, y: number };
 export type CharState = { id: string, inMeeting: boolean }
@@ -117,4 +150,3 @@ export type DrawingFrag = { kind: 'char-init', char: CharState, pos: Pos, dx: nu
   | { kind: 'char-line', char: CharState, pos: Pos, sLine: SLine, dx: number }
   | { kind: 'meeting', pos: Pos, dx: number, dy: number }
 
-export type BBox = { x: number, y: number, dx: number, dy: number }

@@ -6,7 +6,7 @@ import { DebugAlignedComponent } from "./DebugAligned";
 import { Storyline, WithAlignedGroups } from "../model/Storyline";
 
 export const App = (props: {}) => {
-  const sample = master2storyline(sgbFile('loose', 'master').tryParse(flintstones));
+  const sample = master2storyline(sgbFile('loose', 'master').tryParse(backToTheFuture));
   console.log(sample);
 
   const [story, setStory] = useState<Storyline<WithAlignedGroups> | undefined>(undefined);
