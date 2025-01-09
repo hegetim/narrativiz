@@ -3,12 +3,11 @@ import { Storyline, WithAlignedGroups } from "./Storyline";
 import { ifDefined, matchByKind, windows2 } from "./Utils";
 
 // const groupSpacing = 20; // space between group members
-const minRadius = 0.25;
+const minRadius = 1;
 const meetingWidth = 1;
 const eps = 1e-6;
 
 
-// fixme: in-slope != out-slope :(
 export const justifyLayers = (s: Storyline<WithAlignedGroups>): DrawingFrag[] => {
   const layers: Stage1A[][] = s.layers.map(layer =>
     layer.groups.flatMap(group =>
@@ -60,7 +59,8 @@ export const justifyLayers = (s: Storyline<WithAlignedGroups>): DrawingFrag[] =>
         kind: "char-line",
         char: { id: cl.char, inMeeting: cl.inMeeting },
         pos: { x: i * layerWidth, y: cl.y },
-        sLine: { dx: cl.inMeeting ? layerWidth - meetingWidth : layerWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
+        // sLine: { dx: cl.inMeeting ? layerWidth - meetingWidth : layerWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
+        sLine: { dx: layerWidth - meetingWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
         dx: layerWidth,
       }),
     }))),
@@ -135,12 +135,6 @@ export const corners = (frag: DrawingFrag): (readonly [number, number])[] => mat
 type Stage1A = { char: string, y: number, inMeeting: boolean };
 type Stage1B = Omit<Stage1A, 'y'> & { yl: number | undefined, yr: number };
 type Stage2A = Stage1A & ({ kind: 'char-init' } | { kind: 'char-line', dy: number, bs: number, offset: number })
-
-// type Stage1 = { char: string, y: number, dy: number, inMeeting: boolean };
-// type Stage2 = Stage1 & { bs: number, offset: number, w: number };
-// type Stage3 = { kind: 'initChar' } & Omit<Stage2, 'dy'>
-//   | { kind: 'charLine' } & Stage2
-//   | { kind: 'meeting', y: number, w: number, h: number };
 
 export type Pos = { x: number, y: number };
 export type CharState = { id: string, inMeeting: boolean }
