@@ -10,16 +10,17 @@ CC c
 export const administrations = `*
 CX CDU/CSU
 SP SPD
-FD FDP
+F1 FDP
+F2 FDP
 GR Grüne
 
-2002: GR,SP;CX;FD : GR,SP
-2005: GR;SP,CX;FD : SP,CX
-2009: GR;SP;CX,FD : CX,FD
+2002: GR,SP;CX;F1 : GR,SP
+2005: GR;SP,CX;F1 : SP,CX
+2009: GR;SP;CX,F1 : CX,F1
 2013: GR;SP,CX : SP,CX
-2017: FD;GR;SP,CX : SP,CX
-2021: FD,GR,SP;CX : GR,FD,SP
-2024: FD;GR,SP;CX : GR,SP`
+2017: F2;GR;SP,CX : SP,CX
+2021: F2,GR,SP;CX : GR,F2,SP
+2024: F2;GR,SP;CX : GR,SP`
 
 export const stair = `*
 ZZ step

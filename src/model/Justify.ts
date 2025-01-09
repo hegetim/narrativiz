@@ -80,12 +80,12 @@ const dy = (s: Stage1B) => s.yl === undefined ? NaN : s.yr - s.yl
 const mkWidth = (dy: number, bs: number) => {
   if (Number.isNaN(dy)) { return 0; }
   const dxMin2 = (2 * bs + 4 * minRadius) * Math.abs(dy) - dy * dy; // block size conflict
-  console.info(`dx_min²=${dxMin2} dy=${dy} bs=${bs}`);
+  // console.info(`dx_min²=${dxMin2} dy=${dy} bs=${bs}`);
   return Math.max(Math.abs(dy), dxMin2 > 0 ? Math.sqrt(dxMin2) : 0);
 }
 
 const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: number) => {
-  console.info(`join blocks: l=${sizeL} @ ${offsetL}  r=${sizeR} @ ${offsetR}`)
+  // console.info(`join blocks: l=${sizeL} @ ${offsetL}  r=${sizeR} @ ${offsetR}`)
   if (sizeL === sizeR && sizeL === 0) return [0, 0] as const;
   const top = Math.max(sizeL * offsetL, sizeR * offsetR);
   const btm = Math.max(sizeL * (1 - offsetL), sizeR * (1 - offsetR));
