@@ -7,6 +7,20 @@ CC c
 2: CC,AA: CC,AA
 3: CC,DD,AA: CC,DD,AA`;
 
+export const administrations = `*
+CX CDU/CSU
+SP SPD
+FD FDP
+GR Grüne
+
+2002: GR,SP;CX;FD : GR,SP
+2005: GR;SP,CX;FD : SP,CX
+2009: GR;SP;CX,FD : CX,FD
+2013: GR;SP,CX : SP,CX
+2017: FD;GR;SP,CX : SP,CX
+2021: FD,GR,SP;CX : GR,FD,SP
+2024: FD;GR,SP;CX : GR,SP`
+
 export const stair = `*
 ZZ step
 A1 a1
