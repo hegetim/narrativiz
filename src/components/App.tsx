@@ -6,12 +6,12 @@ import { DebugAlignedComponent } from "./DebugAligned";
 import { Storyline, WithAlignedGroups } from "../model/Storyline";
 
 export const App = (props: {}) => {
-  const sample = master2storyline(sgbFile('loose', 'master').tryParse(administrations));
+  const sample = master2storyline(sgbFile('loose', 'master').tryParse(backToTheFuture));
   console.log(sample);
 
   const [story, setStory] = useState<Storyline<WithAlignedGroups> | undefined>(undefined);
   useEffect(() => {
-    align(sample, 'least-squares', 1).then(setStory);
+    align(sample, 'sum-of-heights', 1).then(setStory);
   }, []);
 
   console.log({ story });

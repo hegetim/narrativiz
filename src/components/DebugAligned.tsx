@@ -117,9 +117,15 @@ const mkPolyline = (pt: readonly [number, number], pts: (readonly [number, numbe
   pts.reduce((str, [x, y]) => `${str} L ${x} ${y}`, `M ${pt[0]} ${pt[1]}`);
 
 const bbox = (pts: (readonly [number, number])[], s: number = 1) => {
-  const width = Math.max(...pts.map(p => p[0]));
-  const height = Math.max(...pts.map(p => p[1]));
-  return [width * s, height * s, `-10 -10 ${width * s + 20} ${height * s + 20}`] as const;
+  const xmin = Math.min(...pts.map(p => p[0]));
+  const ymin = Math.min(...pts.map(p => p[1]));
+  const xmax = Math.max(...pts.map(p => p[0]));
+  const ymax = Math.max(...pts.map(p => p[1]));
+  return [
+    (xmax - xmin) * s,
+    (ymax - ymin) * s,
+    `${xmin * s - 10} ${ymin * s - 10} ${(xmax - xmin) * s + 20} ${(ymax - ymin) * s + 20}`
+  ] as const;
 }
 
 const meeting = (top: readonly [number, number], r: number, h: number) =>
