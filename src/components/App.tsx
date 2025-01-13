@@ -1,23 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { master2storyline, sgbFile } from "../io/sgb"
+import React, { useState } from "react";
+import { MasterStoryline } from "../io/sgb"
 import { align } from "../model/Align";
-import { administrations, backToTheFuture, flintstones, stair, superSmall } from "../model/Data";
-import { DebugAlignedComponent } from "./DebugAligned";
 import { Storyline, WithAlignedGroups } from "../model/Storyline";
+import { StorylineComponent } from "./StorylineComponent";
+import { SelectFile } from "./StorylineFromFile";
+import "./PKColors.css";
 
-export const App = (props: {}) => {
-  const sample = master2storyline(sgbFile('loose', 'master').tryParse(backToTheFuture));
-  console.log(sample);
+type Props = {};
+type State = { kind: 'ready' | 'processing' } | { kind: 'show', story: Storyline<WithAlignedGroups> };
 
-  const [story, setStory] = useState<Storyline<WithAlignedGroups> | undefined>(undefined);
-  useEffect(() => {
-    align(sample, 'sum-of-heights', 1).then(setStory);
-  }, []);
 
-  console.log({ story });
+export const App = ({ }: Props) => {
+  const [state, setState] = useState<State>({ kind: 'ready' });
 
-  if (story) {
-    return <DebugAlignedComponent story={story} />;
+  const handleStory = (story: MasterStoryline) => {
+    setState({ kind: 'processing' });
+    align(story, 'sum-of-heights', 1).then(aligned => setState({ kind: 'show', story: aligned! }));
+  }
+
+  if (state.kind === 'ready') {
+    return <SelectFile onSuccess={handleStory} />;
+  } if (state.kind === 'show') {
+    return <StorylineComponent story={state.story} />;
   } else {
     return "";
   }

@@ -4,13 +4,14 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import { cls, matchByKind, unimplemented } from "../model/Utils";
-import { master2storyline, sgbFile } from "../io/sgb";
+import { master2storyline, MasterStoryline, sgbFile } from "../io/sgb";
 import { formatError } from "parsimmon";
+import './StorylineFromFile.css';
 
-type Props = {};
+type Props = { onSuccess: (story: MasterStoryline) => void };
 type State = { kind: 'calm' | 'active' } | { kind: 'error', msg: string };
 
-export const SelectFile = ({ }: Props) => {
+export const SelectFile = ({ onSuccess }: Props) => {
   const hiddenInput = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>({ kind: 'calm' });
 
@@ -20,7 +21,7 @@ export const SelectFile = ({ }: Props) => {
       error: err => setState(err),
       pass: pass => matchByKind(parseMaster(pass.str), {
         error: err => setState(err),
-        pass: pass => unimplemented(),
+        pass: pass => onSuccess(pass.story),
       })
     });
   };
