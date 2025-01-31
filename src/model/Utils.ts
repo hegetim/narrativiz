@@ -37,5 +37,9 @@ export const cls = (...names: ClassNames) => {
   return { className: joined };
 }
 
+export const assertThat = (subject: boolean, msg: string) => {
+  if (!subject) { throw new Error(msg); }
+}
+
 export const unimplemented = () => { throw new Error('not implemented'); }
 export const unreachable = () => { throw new Error('unreachable code'); }

@@ -16,8 +16,8 @@ type Props = {
 
 export const StorylineComponent = ({ story }: Props) => {
 
-  const justified = justifyLayers(story)
-  const [width, _height, vbox] = bbox(justified.flatMap(corners), oneDistance)
+  const justified = justifyLayers(story, { layerStyle: 'condensed' });
+  const [width, _height, vbox] = bbox(justified.flatMap(corners), oneDistance);
   return <svg viewBox={vbox} width={width}>{drawFrags(justified)}</svg>;
 }
 

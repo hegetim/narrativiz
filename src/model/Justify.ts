@@ -1,14 +1,17 @@
-import _, { invokeMap } from "lodash";
+import _ from "lodash";
 import { Storyline, WithAlignedGroups } from "./Storyline";
-import { ifDefined, matchByKind, windows2 } from "./Utils";
+import { assertThat, ifDefined, matchByKind, unimplemented, windows2 } from "./Utils";
 
-// const groupSpacing = 20; // space between group members
 const minRadius = 1;
 const meetingWidth = 1;
+const minLayerWidth = 2;
 const eps = 1e-6;
 
+type JustifyConfig = {
+  layerStyle: 'uniform' | 'condensed'
+}
 
-export const justifyLayers = (s: Storyline<WithAlignedGroups>): DrawingFrag[] => {
+export const justifyLayers = (s: Storyline<WithAlignedGroups>, { layerStyle }: JustifyConfig): DrawingFrag[] => {
   const layers: Stage1A[][] = s.layers.map(layer =>
     layer.groups.flatMap(group =>
       group.charactersOrdered.map((char, j) => ({ char, inMeeting: group.kind === 'active', y: group.atY + j }))
@@ -42,47 +45,27 @@ export const justifyLayers = (s: Storyline<WithAlignedGroups>): DrawingFrag[] =>
     }
   })
 
-  const layerWidth = Math.max(...otherLayers.flatMap(layer => layer.map<number>(item => matchByKind(item, {
-    "char-init": _0 => meetingWidth,
-    "char-line": cl => mkWidth(cl.dy, cl.bs) + (cl.inMeeting ? meetingWidth : 0),
-  }))));
-
-  return [
-    ...[firstLayer, ...otherLayers].flatMap((layer, i) => layer.map<DrawingFrag>(item => matchByKind(item, {
-      "char-init": ci => ({
-        kind: "char-init",
-        char: { id: ci.char, inMeeting: ci.inMeeting },
-        pos: { x: (i + 1) * layerWidth - meetingWidth, y: ci.y },
-        dx: meetingWidth,
-      }),
-      "char-line": cl => ({
-        kind: "char-line",
-        char: { id: cl.char, inMeeting: cl.inMeeting },
-        pos: { x: i * layerWidth, y: cl.y },
-        // sLine: { dx: cl.inMeeting ? layerWidth - meetingWidth : layerWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
-        sLine: { dx: layerWidth - meetingWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
-        dx: layerWidth,
-      }),
-    }))),
-    ...s.layers.flatMap((layer, i) => layer.groups.filter(g => g.kind === 'active').map(g => ({
-      kind: "meeting" as const,
-      pos: { x: (i + 1) * layerWidth - meetingWidth, y: g.atY },
-      dx: meetingWidth,
-      dy: g.characters.length - 1,
-    }))),
-  ];
+  if (layerStyle === 'uniform') {
+    const layerWidth = Math.max(...otherLayers.flatMap(mkWidth));
+    return mkFragsUniform(s, [firstLayer, ...otherLayers], layerWidth);
+  } else {
+    return mkFragsCondensed(s, [firstLayer, ...otherLayers]);
+  }
 }
 
 const slope2slope = (x: number): -1 | 0 | 1 => Math.abs(x) > eps ? (x > 0 ? 1 : -1) : 0;
 
 const dy = (s: Stage1B) => s.yl === undefined ? NaN : s.yr - s.yl
 
-const mkWidth = (dy: number, bs: number) => {
-  if (Number.isNaN(dy)) { return 0; }
-  const dxMin2 = (2 * bs + 4 * minRadius) * Math.abs(dy) - dy * dy; // block size conflict
-  // console.info(`dx_min²=${dxMin2} dy=${dy} bs=${bs}`);
-  return Math.max(Math.abs(dy), dxMin2 > 0 ? Math.sqrt(dxMin2) : 0);
-}
+
+const mkWidth = (layer: Stage2A[]) => layer.map<number>(item => matchByKind(item, {
+  "char-init": _0 => meetingWidth,
+  "char-line": cl => {
+    if (Number.isNaN(cl.dy)) { return 0; }
+    const dxMin2 = (2 * cl.bs + 4 * minRadius) * Math.abs(cl.dy) - cl.dy * cl.dy; // block size conflict
+    return Math.max(Math.abs(cl.dy), dxMin2 > 0 ? Math.sqrt(dxMin2) : 0) + meetingWidth;
+  }
+}));
 
 const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: number) => {
   // console.info(`join blocks: l=${sizeL} @ ${offsetL}  r=${sizeR} @ ${offsetR}`)
@@ -114,6 +97,63 @@ const mkBlocks = <T extends {}>(
     i++;
   }
   return res;
+}
+
+const mkFragsUniform = (story: Storyline<WithAlignedGroups>, layers: Stage2A[][], width: number) => [
+  ...layers.flatMap((layer, i) => layer.map<DrawingFrag>(item => matchByKind(item, {
+    "char-init": ci => ({
+      kind: "char-init",
+      char: { id: ci.char, inMeeting: ci.inMeeting },
+      pos: { x: (i + 1) * width - meetingWidth, y: ci.y },
+      dx: meetingWidth,
+    }),
+    "char-line": cl => ({
+      kind: "char-line",
+      char: { id: cl.char, inMeeting: cl.inMeeting },
+      pos: { x: i * width, y: cl.y },
+      // sLine: { dx: cl.inMeeting ? layerWidth - meetingWidth : layerWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
+      sLine: { dx: width - meetingWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
+      dx: width,
+    }),
+  }))),
+  ...story.layers.flatMap((layer, i) => layer.groups.filter(g => g.kind === 'active').map(g => ({
+    kind: "meeting" as const,
+    pos: { x: (i + 1) * width - meetingWidth, y: g.atY },
+    dx: meetingWidth,
+    dy: g.characters.length - 1,
+  }))),
+];
+
+const mkFragsCondensed = (story: Storyline<WithAlignedGroups>, layers: Stage2A[][]) => {
+  assertThat(story.layers.length === layers.length, "number of storyline layers and calculated layers did not match");
+  const result: DrawingFrag[] = [];
+  let x = 0;
+  for (let [sl, s2a] of _.zip(story.layers, layers)) {
+    const width = Math.max(...mkWidth(s2a!), minLayerWidth);
+    result.push(...s2a!.map<DrawingFrag>(item => matchByKind(item, {
+      "char-init": ci => ({
+        kind: "char-init",
+        char: { id: ci.char, inMeeting: ci.inMeeting },
+        pos: { x: x + width - meetingWidth, y: ci.y },
+        dx: meetingWidth,
+      }),
+      "char-line": cl => ({
+        kind: "char-line",
+        char: { id: cl.char, inMeeting: cl.inMeeting },
+        pos: { x, y: cl.y },
+        sLine: { dx: width - meetingWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
+        dx: width,
+      }),
+    })));
+    result.push(...sl!.groups.filter(g => g.kind === 'active').map(g => ({
+      kind: "meeting" as const,
+      pos: { x: x + width - meetingWidth, y: g.atY },
+      dx: meetingWidth,
+      dy: g.characters.length - 1,
+    })));
+    x += width;
+  }
+  return result;
 }
 
 export const corners = (frag: DrawingFrag): (readonly [number, number])[] => matchByKind(frag, {

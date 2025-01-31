@@ -62,7 +62,7 @@ export const DebugAlignedComponent = ({ story }: Props) => {
     })
   })
 
-  const justified = justifyLayers(story)
+  const justified = justifyLayers(story, { layerStyle: 'uniform' });
   console.log({ justified })
 
   const [width, _height, vbox] = bbox([...buf.values()].flat())
