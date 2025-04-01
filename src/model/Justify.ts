@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Storyline, WithAlignedGroups } from "./Storyline";
-import { assertThat, ifDefined, matchByKind, unimplemented, windows2 } from "./Utils";
+import { assertThat, ifDefined, matchByKind, matchString, windows2 } from "./Utils";
 
 const minRadius = 1;
 const meetingWidth = 1;
@@ -8,10 +8,11 @@ const minLayerWidth = 2;
 const eps = 1e-6;
 
 type JustifyConfig = {
-  layerStyle: 'uniform' | 'condensed'
+  layerStyle: 'uniform' | 'condensed',
+  blockHandling: 'full' | 'continuous'
 }
 
-export const justifyLayers = (s: Storyline<WithAlignedGroups>, { layerStyle }: JustifyConfig): DrawingFrag[] => {
+export const justifyLayers = (s: Storyline<WithAlignedGroups>, { layerStyle, blockHandling }: JustifyConfig): DrawingFrag[] => {
   const layers: Stage1A[][] = s.layers.map(layer =>
     layer.groups.flatMap(group =>
       group.charactersOrdered.map((char, j) => ({ char, inMeeting: group.kind === 'active', y: group.atY + j }))
@@ -19,7 +20,7 @@ export const justifyLayers = (s: Storyline<WithAlignedGroups>, { layerStyle }: J
   );
 
   const betweenLayers: Stage1B[][] = [...windows2(layers)].map(([left, right]) => right.map(r => {
-    const l = _.find(left, x => x.char === r.char);
+    const l = left.find(x => x.char === r.char);
     return { char: r.char, inMeeting: r.inMeeting, yl: l?.y, yr: r.y };
   }));
 
@@ -27,12 +28,9 @@ export const justifyLayers = (s: Storyline<WithAlignedGroups>, { layerStyle }: J
 
   const otherLayers: Stage2A[][] = _.zip(_.initial(layers), betweenLayers).map(([left, right]) => {
     if (!left || !right) { throw new Error(`layer undefined: l=${left} r=${right}`) } else {
-      const leftBlocks = mkBlocks(
-        left,
-        l => slope2slope(ifDefined(right.find(r => l.char === r.char), dy) ?? NaN),
-        l => l.y
-      );
-      const rightBlocks = mkBlocks(right, r => slope2slope(dy(r)), r => r.yr);
+      const leftSlope = (l: Stage1A) => slope2slope(ifDefined(right.find(r => l.char === r.char), dy) ?? NaN);
+      const leftBlocks = mkBlocks(blockHandling, left, leftSlope, l => l.y);
+      const rightBlocks = mkBlocks(blockHandling, right, r => slope2slope(dy(r)), r => r.yr);
 
       return rightBlocks.map(r => {
         if (r.yl === undefined) { return { kind: 'char-init', char: r.char, y: r.yr, inMeeting: r.inMeeting }; }
@@ -76,26 +74,59 @@ const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: numb
 }
 
 const mkBlocks = <T extends {}>(
+  mode: JustifyConfig['blockHandling'],
   ts: T[],
   slope: (t: T) => -1 | 0 | 1,
   y: (t: T) => number,
 ): (T & { bs: number, offset: number })[] => {
   const rem: (T & { slope?: -1 | 0 | 1 | undefined })[] = [...ts];
   const res: (T & { bs: number, offset: number })[] = [];
-  let i = 0, j = 0;
-  while (i <= ts.length) {
-    const itemI = rem[i];
-    if (itemI !== undefined) { itemI.slope = slope(itemI); }
-    if (itemI?.slope !== rem[j]!.slope) {
-      const y0 = y(rem[j]!)
-      const bs = y(rem[i - 1]!) - y0;
-      while (j !== i) {
-        res.push({ ...ts[j]!, bs: bs, offset: bs === 0 ? 0 : (y(rem[j]!) - y0) / bs });
-        j++;
+  rem.forEach(t => t.slope = slope(t));
+
+  matchString(mode, {
+    continuous: () => {
+      let i = 0, j = 0;
+      while (i <= ts.length) {
+        const itemI = rem[i];
+        // if (itemI !== undefined) { itemI.slope = slope(itemI); }
+        if (itemI?.slope !== rem[j]!.slope) {
+          const y0 = y(rem[j]!)
+          const bs = y(rem[i - 1]!) - y0;
+          while (j !== i) {
+            res.push({ ...ts[j]!, bs, offset: bs === 0 ? 0 : (y(rem[j]!) - y0) / bs });
+            j++;
+          }
+        }
+        i++;
       }
+    },
+    full: () => {
+      let [firstUp, firstDown, lastUp, lastDown] = [-1, -1, -1, -1];
+      rem.forEach((t, i) => {
+        if (t.slope === -1) {
+          if (firstUp === -1) { firstUp = i; }
+          lastUp = i;
+        }
+        if (t.slope === 1) {
+          if (firstDown === -1) { firstDown = i; }
+          lastDown = i;
+        }
+      });
+      const [up0, down0] = [ifDefined(rem[firstUp], y) ?? 0, ifDefined(rem[firstDown], y) ?? 0];
+      const [upBs, downBs] = [(ifDefined(rem[lastUp], y) ?? 0) - up0, (ifDefined(rem[lastDown], y) ?? 0) - down0];
+      console.log({ firstUp, firstDown, lastUp, lastDown, up0, down0, upBs, downBs })
+      rem.forEach(t => {
+        if (t.slope === -1) {
+          res.push({ ...t, bs: upBs, offset: upBs === 0 ? 0 : (y(t) - up0) / upBs });
+        } else if (t.slope === 1) {
+          res.push({ ...t, bs: downBs, offset: downBs === 0 ? 0 : (y(t) - down0) / downBs });
+        } else {
+          res.push({ ...t, bs: 0, offset: 0 });
+        }
+      });
     }
-    i++;
-  }
+  });
+
   return res;
 }
 
