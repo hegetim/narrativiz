@@ -2,20 +2,22 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { Storyline, WithAlignedGroups, WithRealizedGroups } from './Storyline';
-import { matchString, pushMMap, windows2 } from './Utils';
+import { Storyline, StorylineLayer, WithAlignedGroups, WithRealizedGroups } from './Storyline';
+import { matchString, pushMMap, unimplemented, windows2 } from './Utils';
 import { fmtQP, QPConstraint, qpNum, QPTerm, qpVar } from './QPSupport';
 import highsLoader from 'highs';
 import _ from 'lodash';
 
-export type AlignCriterion = "sum-of-heights" | "least-squares";
+export type AlignCriterion = "sum-of-heights" | "least-squares" | "strict-center";
 
 type InGroup = { groupId: string, offset: number };
 type CharLines = Map<string, InGroup[]>;
-type Realization = Storyline<WithRealizedGroups>;
-type Aligned = Storyline<WithAlignedGroups>;
 
-export const align = async (r: Realization, mode: AlignCriterion, gapRatio: number) => {
+export const align = async <S extends {}, L extends {}, G extends {}>(
+  r: Storyline<WithRealizedGroups & S, L, G>,
+  mode: AlignCriterion,
+  gapRatio: number
+): Promise<Storyline<WithAlignedGroups & S, L, G> | undefined> => {
   const characters: CharLines = new Map();
   const yConstraints: QPConstraint[] = [];
 
@@ -44,6 +46,7 @@ export const align = async (r: Realization, mode: AlignCriterion, gapRatio: numb
       const [zConstraints, obj] = mkSumOfHeights(characters);
       return solve(r, fmtQP(yConstraints.concat(...zConstraints), obj, 'min'));
     },
+    "strict-center": () => alignCenter(r)
   });
 }
 
@@ -67,8 +70,10 @@ const mkSumOfHeights = (cl: CharLines): [QPConstraint[], QPTerm] => {
 }
 
 // todo: add proper error handling
-// todo: proper generic typing
-const solve = async (r: Realization, instance: string): Promise<Aligned | undefined> => {
+const solve = async <S extends {}, L extends {}, G extends {}>(
+  r: Storyline<WithRealizedGroups & S, L, G>,
+  instance: string
+): Promise<Storyline<WithAlignedGroups & S, L, G> | undefined> => {
   const highs = await highsLoader();
   // const highs = await highsLoader({ locateFile: file => `https://lovasoa.github.io/highs-js/${file}` });
   // const instance = fmtQP(yc, optSqr(cl), 'min');
@@ -87,4 +92,22 @@ const solve = async (r: Realization, instance: string): Promise<Aligned | undefi
       })),
     };
   } else return undefined;
+}
+
+const alignCenter = async <S extends {}, L extends {}, G extends {}>(
+  r: Storyline<WithRealizedGroups & S, L, G>
+) => {
+  const alignGroups = (layer: StorylineLayer<WithRealizedGroups & S> & L) => {
+    const offset = layer.groups.reduce((s, g) => s + g.characters.length, 0) / 2;
+    let rem = 0;
+    return {
+      ...layer,
+      groups: layer.groups.map((group, j) => {
+        const atY = rem - offset;
+        rem += group.characters.length;
+        return { ...group, atY };
+      })
+    }
+  }
+  return { ...r, layers: r.layers.map(alignGroups) };
 }

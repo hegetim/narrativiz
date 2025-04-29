@@ -1,0 +1,1729 @@
+{
+  "chars": {
+    "AO": {
+      "wagon-type": "LAM",
+      "start-station": "Gn",
+      "end-station": "Ledn"
+    },
+    "AC": {
+      "wagon-type": "LBM",
+      "start-station": "Ut",
+      "end-station": "Bkh"
+    },
+    "AX": {
+      "wagon-type": "LBM",
+      "start-station": "Ldd",
+      "end-station": "Ut"
+    },
+    "BB": {
+      "wagon-type": "LAM",
+      "start-station": "Lw",
+      "end-station": "Gn"
+    },
+    "AJ": {
+      "wagon-type": "LAM",
+      "start-station": "Rtd",
+      "end-station": "Lw"
+    },
+    "BA": {
+      "wagon-type": "LBM",
+      "start-station": "On",
+      "end-station": "Ut"
+    },
+    "AQ": {
+      "wagon-type": "LBM",
+      "start-station": "Rtd",
+      "end-station": "Llso"
+    },
+    "AM": {
+      "wagon-type": "LAM",
+      "start-station": "Gvc",
+      "end-station": "Bkh"
+    },
+    "BC": {
+      "wagon-type": "LAM",
+      "start-station": "On",
+      "end-station": "On"
+    },
+    "AI": {
+      "wagon-type": "LAM",
+      "start-station": "Rtd",
+      "end-station": "On"
+    },
+    "AS": {
+      "wagon-type": "LBM",
+      "start-station": "Gn",
+      "end-station": "Ut"
+    },
+    "AW": {
+      "wagon-type": "LBM",
+      "start-station": "Ldd",
+      "end-station": "Ut"
+    },
+    "AL": {
+      "wagon-type": "LBM",
+      "start-station": "Gn",
+      "end-station": "Gn"
+    },
+    "AH": {
+      "wagon-type": "LBM",
+      "start-station": "Bkd",
+      "end-station": "Zl"
+    },
+    "AT": {
+      "wagon-type": "LBM",
+      "start-station": "Bkd",
+      "end-station": "Gvc"
+    },
+    "BD": {
+      "wagon-type": "LAM",
+      "start-station": "Ut",
+      "end-station": "Ut"
+    },
+    "BG": {
+      "wagon-type": "LBM",
+      "start-station": "Zl",
+      "end-station": "Zl"
+    },
+    "AY": {
+      "wagon-type": "LAM",
+      "start-station": "Ut",
+      "end-station": "Ut"
+    },
+    "AZ": {
+      "wagon-type": "LBM",
+      "start-station": "Ldd",
+      "end-station": "Hlm"
+    },
+    "AK": {
+      "wagon-type": "LAM",
+      "start-station": "Gn",
+      "end-station": "Gn"
+    },
+    "BH": {
+      "wagon-type": "LAM",
+      "start-station": "Hfdo",
+      "end-station": "Gn"
+    },
+    "AN": {
+      "wagon-type": "LBM",
+      "start-station": "Gn",
+      "end-station": "Lw"
+    },
+    "AD": {
+      "wagon-type": "LAM",
+      "start-station": "Zl",
+      "end-station": "Rtd"
+    },
+    "BE": {
+      "wagon-type": "LBM",
+      "start-station": "Zl",
+      "end-station": "Rtd"
+    },
+    "AU": {
+      "wagon-type": "LBM",
+      "start-station": "Ut",
+      "end-station": "Zl"
+    },
+    "AA": {
+      "wagon-type": "LBM",
+      "start-station": "Ut",
+      "end-station": "Asb"
+    },
+    "AF": {
+      "wagon-type": "LBM",
+      "start-station": "Rtd",
+      "end-station": "Rtd"
+    },
+    "BI": {
+      "wagon-type": "LBM",
+      "start-station": "Gn",
+      "end-station": "Rtd"
+    },
+    "AE": {
+      "wagon-type": "LBM",
+      "start-station": "Gn",
+      "end-station": "Zl"
+    },
+    "AR": {
+      "wagon-type": "LBM",
+      "start-station": "Lw",
+      "end-station": "Zl"
+    },
+    "BF": {
+      "wagon-type": "LBM",
+      "start-station": "Hlm",
+      "end-station": "Ldd"
+    },
+    "AG": {
+      "wagon-type": "LAM",
+      "start-station": "Lw",
+      "end-station": "Zl"
+    },
+    "AV": {
+      "wagon-type": "LAM",
+      "start-station": "Llso",
+      "end-station": "Bkh"
+    },
+    "AB": {
+      "wagon-type": "LBM",
+      "start-station": "Gn",
+      "end-station": "Gn"
+    },
+    "AP": {
+      "wagon-type": "LBM",
+      "start-station": "On",
+      "end-station": "Gn"
+    }
+  },
+  "meetings": {
+    "0d16h41m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15448"
+    },
+    "0d20h43m_AS": {
+      "station": "Gn",
+      "trip-number": "778"
+    },
+    "0d19h37m_AR": {
+      "station": "Lw",
+      "trip-number": "674"
+    },
+    "0d19h59m_BE": {
+      "station": "Amf",
+      "trip-number": "571"
+    },
+    "0d13h45m_BA": {
+      "station": "Gn",
+      "trip-number": "750"
+    },
+    "0d18h42m_AN": {
+      "station": "Lw",
+      "trip-number": "670"
+    },
+    "0d10h16m_BH": {
+      "station": "Lw",
+      "trip-number": "1836"
+    },
+    "0d11h11m_AT": {
+      "station": "Ut",
+      "trip-number": "2032"
+    },
+    "0d08h37m_AX": {
+      "station": "Ut",
+      "trip-number": "2022"
+    },
+    "0d16h30m_AW": {
+      "station": "Gvc",
+      "trip-number": "2063"
+    },
+    "0d22h33m_AP": {
+      "station": "Gvc",
+      "trip-number": "785"
+    },
+    "0d17h36m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15452"
+    },
+    "1d00h56m_AM": {
+      "station": "Gvc",
+      "trip-number": "83105"
+    },
+    "0d16h08m_BF": {
+      "station": "Zvt",
+      "trip-number": "15446"
+    },
+    "0d15h57m_AO": {
+      "station": "Gvc",
+      "trip-number": "1859"
+    },
+    "0d20h32m_AI": {
+      "station": "Gn",
+      "trip-number": "80465"
+    },
+    "0d14h40m_BA": {
+      "station": "Zl",
+      "trip-number": "750"
+    },
+    "0d14h18m_BD": {
+      "station": "Rtd",
+      "trip-number": "2853"
+    },
+    "0d07h20m_AA": {
+      "station": "Ledn",
+      "trip-number": "8825"
+    },
+    "0d07h42m_AR": {
+      "station": "Zl",
+      "trip-number": "622"
+    },
+    "0d08h15m_AB": {
+      "station": "Zl",
+      "trip-number": "524"
+    },
+    "0d11h22m_BG": {
+      "station": "Zl",
+      "trip-number": "5638"
+    },
+    "0d15h02m_BC": {
+      "station": "Amf",
+      "trip-number": "551"
+    },
+    "0d12h06m_AW": {
+      "station": "Ut",
+      "trip-number": "2036"
+    },
+    "0d15h02m_AB": {
+      "station": "Rtd",
+      "trip-number": "555"
+    },
+    "0d13h56m_AY": {
+      "station": "Ut",
+      "trip-number": "2844"
+    },
+    "0d21h16m_AU": {
+      "station": "Zl",
+      "trip-number": "1876"
+    },
+    "0d10h05m_BG": {
+      "station": "Amf",
+      "trip-number": "5631"
+    },
+    "0d15h13m_AL": {
+      "station": "Zl",
+      "trip-number": "552"
+    },
+    "0d06h14m_BC": {
+      "station": "Zl",
+      "trip-number": "516"
+    },
+    "0d21h38m_AS": {
+      "station": "Zl",
+      "trip-number": "778"
+    },
+    "0d16h30m_AE": {
+      "station": "Gvc",
+      "trip-number": "761"
+    },
+    "0d19h15m_AA": {
+      "station": "Ut",
+      "trip-number": "2064"
+    },
+    "0d18h20m_AW": {
+      "station": "Ledn",
+      "trip-number": "8869"
+    },
+    "0d18h42m_BD": {
+      "station": "Rtd",
+      "trip-number": "2871"
+    },
+    "0d08h59m_AE": {
+      "station": "Gvc",
+      "trip-number": "1831"
+    },
+    "0d06h47m_AT": {
+      "station": "Ledn",
+      "trip-number": "8823"
+    },
+    "0d20h21m_BG": {
+      "station": "Zl",
+      "trip-number": "5674"
+    },
+    "0d11h00m_AK": {
+      "station": "Amf",
+      "trip-number": "535"
+    },
+    "0d10h05m_AO": {
+      "station": "Amf",
+      "trip-number": "531"
+    },
+    "0d23h50m_BA": {
+      "station": "Zl",
+      "trip-number": "686"
+    },
+    "0d15h57m_BI": {
+      "station": "Rtd",
+      "trip-number": "559"
+    },
+    "0d18h20m_BC": {
+      "station": "Zl",
+      "trip-number": "564"
+    },
+    "0d15h02m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15461"
+    },
+    "0d07h20m_AY": {
+      "station": "Rtd",
+      "trip-number": "2825"
+    },
+    "0d17h14m_BG": {
+      "station": "Zl",
+      "trip-number": "5662"
+    },
+    "0d12h28m_AC": {
+      "station": "Gvc",
+      "trip-number": "745"
+    },
+    "0d22h44m_AD": {
+      "station": "Zl",
+      "trip-number": "682"
+    },
+    "0d23h17m_AT": {
+      "station": "Ledn",
+      "trip-number": "8889"
+    },
+    "0d08h04m_AC": {
+      "station": "Amf",
+      "trip-number": "523"
+    },
+    "0d17h03m_BF": {
+      "station": "Zvt",
+      "trip-number": "15450"
+    },
+    "0d19h26m_AJ": {
+      "station": "Rtd",
+      "trip-number": "673"
+    },
+    "0d17h14m_AF": {
+      "station": "Zl",
+      "trip-number": "560"
+    },
+    "0d08h15m_BG": {
+      "station": "Zl",
+      "trip-number": "5626"
+    },
+    "0d08h48m_BH": {
+      "station": "Zl",
+      "trip-number": "1823"
+    },
+    "0d19h48m_AX": {
+      "station": "Ut",
+      "trip-number": "8868"
+    },
+    "0d08h48m_AB": {
+      "station": "Amf",
+      "trip-number": "524"
+    },
+    "0d07h42m_AH": {
+      "station": "Ut",
+      "trip-number": "2018"
+    },
+    "0d16h30m_BF": {
+      "station": "Hlm",
+      "trip-number": "15467"
+    },
+    "0d19h15m_AY": {
+      "station": "Rtd",
+      "trip-number": "2873"
+    },
+    "0d17h47m_AJ": {
+      "station": "Zl",
+      "trip-number": "662"
+    },
+    "0d17h25m_AD": {
+      "station": "Amf",
+      "trip-number": "661"
+    },
+    "1d01h40m_AA": {
+      "station": "Ledn",
+      "trip-number": "24406"
+    },
+    "0d12h39m_BG": {
+      "station": "Ut",
+      "trip-number": "5643"
+    },
+    "0d18h42m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15456"
+    },
+    "0d09h43m_BC": {
+      "station": "Zl",
+      "trip-number": "527"
+    },
+    "0d16h41m_BH": {
+      "station": "Gn",
+      "trip-number": "762"
+    },
+    "0d13h12m_BF": {
+      "station": "Zvt",
+      "trip-number": "15434"
+    },
+    "1d00h56m_AC": {
+      "station": "Gvc",
+      "trip-number": "183105"
+    },
+    "0d17h36m_AK": {
+      "station": "Zl",
+      "trip-number": "559"
+    },
+    "0d10h38m_AO": {
+      "station": "Zl",
+      "trip-number": "531"
+    },
+    "0d10h49m_AA": {
+      "station": "Ledn",
+      "trip-number": "8839"
+    },
+    "0d14h07m_BF": {
+      "station": "Zvt",
+      "trip-number": "15438"
+    },
+    "0d13h01m_AF": {
+      "station": "Rtd",
+      "trip-number": "547"
+    },
+    "0d13h01m_BG": {
+      "station": "Amf",
+      "trip-number": "5643"
+    },
+    "0d15h35m_AN": {
+      "station": "Rtd",
+      "trip-number": "657"
+    },
+    "0d21h38m_AD": {
+      "station": "Lw",
+      "trip-number": "682"
+    },
+    "0d08h15m_AU": {
+      "station": "Ut",
+      "trip-number": "2020"
+    },
+    "0d05h30m_AS": {
+      "station": "Gn",
+      "trip-number": "718"
+    },
+    "0d07h53m_AY": {
+      "station": "Ut",
+      "trip-number": "2820"
+    },
+    "0d22h33m_AN": {
+      "station": "Amf",
+      "trip-number": "681"
+    },
+    "0d11h11m_BD": {
+      "station": "Rtd",
+      "trip-number": "2841"
+    },
+    "0d22h55m_AU": {
+      "station": "Gvc",
+      "trip-number": "1887"
+    },
+    "0d17h14m_BC": {
+      "station": "Gn",
+      "trip-number": "564"
+    },
+    "0d13h01m_AW": {
+      "station": "Gvc",
+      "trip-number": "2049"
+    },
+    "0d19h37m_AV": {
+      "station": "Gvc",
+      "trip-number": "83065"
+    },
+    "0d10h38m_AJ": {
+      "station": "Lw",
+      "trip-number": "638"
+    },
+    "0d05h30m_BH": {
+      "station": "Hfdo",
+      "trip-number": "70710"
+    },
+    "0d05h19m_AV": {
+      "station": "Llso",
+      "trip-number": "80945"
+    },
+    "0d13h45m_AG": {
+      "station": "Zl",
+      "trip-number": "646"
+    },
+    "0d11h44m_AP": {
+      "station": "Zl",
+      "trip-number": "1835"
+    },
+    "0d07h53m_BI": {
+      "station": "Amf",
+      "trip-number": "520"
+    },
+    "0d18h42m_AM": {
+      "station": "Ut",
+      "trip-number": "2062"
+    },
+    "0d18h42m_AI": {
+      "station": "Zl",
+      "trip-number": "563"
+    },
+    "0d09h10m_AM": {
+      "station": "Lw",
+      "trip-number": "1832"
+    },
+    "0d12h06m_BF": {
+      "station": "Zvt",
+      "trip-number": "15430"
+    },
+    "0d05h41m_AX": {
+      "station": "Ldd",
+      "trip-number": "80230"
+    },
+    "0d20h43m_BE": {
+      "station": "Zl",
+      "trip-number": "571"
+    },
+    "0d13h34m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15436"
+    },
+    "1d00h23m_AT": {
+      "station": "Ut",
+      "trip-number": "8886"
+    },
+    "0d08h59m_AO": {
+      "station": "Rtd",
+      "trip-number": "531"
+    },
+    "1d00h01m_AS": {
+      "station": "Shl",
+      "trip-number": "80397"
+    },
+    "0d09h43m_BG": {
+      "station": "Ut",
+      "trip-number": "5631"
+    },
+    "0d13h01m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15453"
+    },
+    "0d18h31m_AY": {
+      "station": "Ut",
+      "trip-number": "2862"
+    },
+    "0d13h34m_AJ": {
+      "station": "Rtd",
+      "trip-number": "649"
+    },
+    "0d16h08m_BG": {
+      "station": "Amf",
+      "trip-number": "5655"
+    },
+    "0d17h58m_AB": {
+      "station": "Gn",
+      "trip-number": "568"
+    },
+    "0d16h41m_AJ": {
+      "station": "Lw",
+      "trip-number": "662"
+    },
+    "1d00h01m_AL": {
+      "station": "Amf",
+      "trip-number": "587"
+    },
+    "0d20h10m_BI": {
+      "station": "Zl",
+      "trip-number": "572"
+    },
+    "0d11h00m_AY": {
+      "station": "Ut",
+      "trip-number": "2832"
+    },
+    "0d12h39m_AL": {
+      "station": "Zl",
+      "trip-number": "539"
+    },
+    "0d19h59m_BF": {
+      "station": "Hlm",
+      "trip-number": "80371"
+    },
+    "0d16h30m_AR": {
+      "station": "Rtd",
+      "trip-number": "661"
+    },
+    "0d07h09m_AB": {
+      "station": "Gn",
+      "trip-number": "524"
+    },
+    "0d17h25m_AA": {
+      "station": "Ut",
+      "trip-number": "8858"
+    },
+    "0d13h12m_AK": {
+      "station": "Gn",
+      "trip-number": "548"
+    },
+    "0d11h11m_BH": {
+      "station": "Zl",
+      "trip-number": "1836"
+    },
+    "0d19h15m_AS": {
+      "station": "Zl",
+      "trip-number": "765"
+    },
+    "0d08h26m_BE": {
+      "station": "Amf",
+      "trip-number": "625"
+    },
+    "0d11h44m_AJ": {
+      "station": "Zl",
+      "trip-number": "638"
+    },
+    "0d14h18m_AG": {
+      "station": "Amf",
+      "trip-number": "646"
+    },
+    "0d15h02m_BF": {
+      "station": "Zvt",
+      "trip-number": "15442"
+    },
+    "0d11h55m_BD": {
+      "station": "Ut",
+      "trip-number": "2836"
+    },
+    "0d21h27m_AN": {
+      "station": "Rtd",
+      "trip-number": "681"
+    },
+    "0d05h19m_BG": {
+      "station": "Zl",
+      "trip-number": "5614"
+    },
+    "0d06h25m_AU": {
+      "station": "Ut",
+      "trip-number": "8814"
+    },
+    "0d15h35m_AW": {
+      "station": "Ut",
+      "trip-number": "2050"
+    },
+    "0d14h18m_AA": {
+      "station": "Ledn",
+      "trip-number": "8853"
+    },
+    "0d14h51m_AW": {
+      "station": "Ledn",
+      "trip-number": "8855"
+    },
+    "0d06h25m_BE": {
+      "station": "Amf",
+      "trip-number": "614"
+    },
+    "0d07h09m_BB": {
+      "station": "Lw",
+      "trip-number": "1824"
+    },
+    "0d23h06m_BH": {
+      "station": "Zl",
+      "trip-number": "781"
+    },
+    "0d21h49m_AW": {
+      "station": "Ledn",
+      "trip-number": "8883"
+    },
+    "0d12h28m_BF": {
+      "station": "Hlm",
+      "trip-number": "15451"
+    },
+    "0d11h55m_AL": {
+      "station": "Amf",
+      "trip-number": "539"
+    },
+    "0d17h03m_AL": {
+      "station": "Rtd",
+      "trip-number": "563"
+    },
+    "0d21h16m_AT": {
+      "station": "Ledn",
+      "trip-number": "8881"
+    },
+    "0d14h40m_AF": {
+      "station": "Zl",
+      "trip-number": "547"
+    },
+    "0d10h16m_AT": {
+      "station": "Ledn",
+      "trip-number": "8837"
+    },
+    "0d15h13m_BH": {
+      "station": "Zl",
+      "trip-number": "749"
+    },
+    "1d01h29m_AO": {
+      "station": "Asb",
+      "trip-number": "24405"
+    },
+    "0d06h58m_AI": {
+      "station": "Rtd",
+      "trip-number": "523"
+    },
+    "0d06h25m_AY": {
+      "station": "Ut",
+      "trip-number": "2814"
+    },
+    "0d10h27m_AD": {
+      "station": "Rtd",
+      "trip-number": "637"
+    },
+    "0d16h30m_BD": {
+      "station": "Ut",
+      "trip-number": "2854"
+    },
+    "1d00h45m_AL": {
+      "station": "Zl",
+      "trip-number": "587"
+    },
+    "0d19h04m_BG": {
+      "station": "Amf",
+      "trip-number": "5667"
+    },
+    "0d09h32m_AY": {
+      "station": "Ut",
+      "trip-number": "2826"
+    },
+    "0d18h53m_AQ": {
+      "station": "Gvc",
+      "trip-number": "1871"
+    },
+    "0d06h47m_AS": {
+      "station": "Zl",
+      "trip-number": "718"
+    },
+    "0d19h59m_AA": {
+      "station": "Gvc",
+      "trip-number": "183169"
+    },
+    "0d09h54m_AN": {
+      "station": "Amf",
+      "trip-number": "528"
+    },
+    "0d09h54m_AA": {
+      "station": "Ut",
+      "trip-number": "8828"
+    },
+    "0d05h52m_AP": {
+      "station": "On",
+      "trip-number": "80273"
+    },
+    "0d18h53m_BC": {
+      "station": "Amf",
+      "trip-number": "564"
+    },
+    "0d07h09m_BG": {
+      "station": "Amf",
+      "trip-number": "5619"
+    },
+    "0d11h44m_AY": {
+      "station": "Rtd",
+      "trip-number": "2843"
+    },
+    "0d10h16m_AW": {
+      "station": "Ut",
+      "trip-number": "8830"
+    },
+    "0d21h38m_BG": {
+      "station": "Ut",
+      "trip-number": "5679"
+    },
+    "0d06h14m_AV": {
+      "station": "Zl",
+      "trip-number": "713"
+    },
+    "0d19h48m_AN": {
+      "station": "Zl",
+      "trip-number": "670"
+    },
+    "0d10h27m_BD": {
+      "station": "Ut",
+      "trip-number": "2830"
+    },
+    "0d20h54m_AQ": {
+      "station": "Zl",
+      "trip-number": "71871"
+    },
+    "0d04h35m_BC": {
+      "station": "On",
+      "trip-number": "80275"
+    },
+    "0d23h50m_AW": {
+      "station": "Ledn",
+      "trip-number": "8891"
+    },
+    "0d15h35m_BF": {
+      "station": "Hlm",
+      "trip-number": "15463"
+    },
+    "0d15h35m_BC": {
+      "station": "Zl",
+      "trip-number": "551"
+    },
+    "0d05h41m_BE": {
+      "station": "Zl",
+      "trip-number": "614"
+    },
+    "0d05h52m_BH": {
+      "station": "Shl",
+      "trip-number": "710"
+    },
+    "0d22h11m_BG": {
+      "station": "Amf",
+      "trip-number": "5679"
+    },
+    "0d14h07m_AP": {
+      "station": "Zl",
+      "trip-number": "1848"
+    },
+    "0d17h14m_BB": {
+      "station": "Zl",
+      "trip-number": "757"
+    },
+    "0d07h31m_BD": {
+      "station": "Ut",
+      "trip-number": "2818"
+    },
+    "0d17h58m_AI": {
+      "station": "Amf",
+      "trip-number": "563"
+    },
+    "0d19h04m_AX": {
+      "station": "Gvc",
+      "trip-number": "2073"
+    },
+    "0d08h48m_AD": {
+      "station": "Zl",
+      "trip-number": "626"
+    },
+    "0d06h47m_AX": {
+      "station": "Ut",
+      "trip-number": "8816"
+    },
+    "0d10h05m_AK": {
+      "station": "Rtd",
+      "trip-number": "535"
+    },
+    "0d08h59m_AA": {
+      "station": "Gvc",
+      "trip-number": "2033"
+    },
+    "0d21h16m_AL": {
+      "station": "Zl",
+      "trip-number": "576"
+    },
+    "0d22h22m_AT": {
+      "station": "Ut",
+      "trip-number": "8878"
+    },
+    "0d11h00m_AV": {
+      "station": "Gvc",
+      "trip-number": "1839"
+    },
+    "0d08h37m_AT": {
+      "station": "Gvc",
+      "trip-number": "2031"
+    },
+    "0d17h58m_AF": {
+      "station": "Amf",
+      "trip-number": "560"
+    },
+    "0d20h10m_AU": {
+      "station": "Lw",
+      "trip-number": "1876"
+    },
+    "0d06h03m_BD": {
+      "station": "Ut",
+      "trip-number": "2812"
+    },
+    "0d19h26m_BD": {
+      "station": "Ut",
+      "trip-number": "2866"
+    },
+    "0d14h40m_AY": {
+      "station": "Rtd",
+      "trip-number": "2855"
+    },
+    "0d13h45m_AD": {
+      "station": "Lw",
+      "trip-number": "650"
+    },
+    "0d12h50m_BD": {
+      "station": "Rtd",
+      "trip-number": "2847"
+    },
+    "0d06h14m_AC": {
+      "station": "Ut",
+      "trip-number": "512"
+    },
+    "0d17h25m_BF": {
+      "station": "Hlm",
+      "trip-number": "15471"
+    },
+    "0d12h28m_AJ": {
+      "station": "Amf",
+      "trip-number": "638"
+    },
+    "0d08h37m_AZ": {
+      "station": "Ldd",
+      "trip-number": "80376"
+    },
+    "0d15h46m_BG": {
+      "station": "Ut",
+      "trip-number": "5655"
+    },
+    "0d13h12m_AP": {
+      "station": "Lw",
+      "trip-number": "1848"
+    },
+    "0d18h09m_AX": {
+      "station": "Ut",
+      "trip-number": "2060"
+    },
+    "0d13h12m_AY": {
+      "station": "Rtd",
+      "trip-number": "2849"
+    },
+    "0d18h09m_BF": {
+      "station": "Zvt",
+      "trip-number": "15454"
+    },
+    "0d22h33m_AR": {
+      "station": "Rtd",
+      "trip-number": "685"
+    },
+    "1d01h29m_AT": {
+      "station": "Ledn",
+      "trip-number": "78886"
+    },
+    "0d17h14m_AN": {
+      "station": "Zl",
+      "trip-number": "657"
+    },
+    "1d00h23m_AO": {
+      "station": "Gvc",
+      "trip-number": "793"
+    },
+    "0d12h06m_AT": {
+      "station": "Gvc",
+      "trip-number": "2045"
+    },
+    "0d11h44m_AK": {
+      "station": "Zl",
+      "trip-number": "535"
+    },
+    "0d23h28m_AR": {
+      "station": "Amf",
+      "trip-number": "685"
+    },
+    "0d14h18m_AL": {
+      "station": "Gn",
+      "trip-number": "552"
+    },
+    "0d10h05m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15441"
+    },
+    "1d00h45m_AA": {
+      "station": "Bkh",
+      "trip-number": "74406"
+    },
+    "0d05h08m_AH": {
+      "station": "Bkd",
+      "trip-number": "88538"
+    },
+    "0d14h07m_AC": {
+      "station": "Zl",
+      "trip-number": "745"
+    },
+    "0d10h27m_BF": {
+      "station": "Hlm",
+      "trip-number": "15443"
+    },
+    "0d19h48m_AP": {
+      "station": "Gn",
+      "trip-number": "774"
+    },
+    "0d19h04m_BF": {
+      "station": "Zvt",
+      "trip-number": "15458"
+    },
+    "0d20h10m_AO": {
+      "station": "Zl",
+      "trip-number": "1872"
+    },
+    "0d21h49m_AX": {
+      "station": "Ut",
+      "trip-number": "8876"
+    },
+    "0d13h56m_AF": {
+      "station": "Amf",
+      "trip-number": "547"
+    },
+    "0d15h24m_BB": {
+      "station": "Gvc",
+      "trip-number": "757"
+    },
+    "0d15h35m_AT": {
+      "station": "Gvc",
+      "trip-number": "2059"
+    },
+    "0d09h32m_AG": {
+      "station": "Rtd",
+      "trip-number": "633"
+    },
+    "0d12h28m_AA": {
+      "station": "Gvc",
+      "trip-number": "2047"
+    },
+    "0d05h19m_AT": {
+      "station": "Amf",
+      "trip-number": "78812"
+    },
+    "0d11h33m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15428"
+    },
+    "0d06h36m_AR": {
+      "station": "Lw",
+      "trip-number": "622"
+    },
+    "0d13h45m_AO": {
+      "station": "Zl",
+      "trip-number": "746"
+    },
+    "0d06h47m_BA": {
+      "station": "Gn",
+      "trip-number": "722"
+    },
+    "0d07h20m_BI": {
+      "station": "Zl",
+      "trip-number": "520"
+    },
+    "0d16h08m_AM": {
+      "station": "Gvc",
+      "trip-number": "2061"
+    },
+    "0d21h27m_BH": {
+      "station": "Gvc",
+      "trip-number": "781"
+    },
+    "0d11h33m_BF": {
+      "station": "Hlm",
+      "trip-number": "15447"
+    },
+    "0d19h59m_AW": {
+      "station": "Gvc",
+      "trip-number": "2077"
+    },
+    "0d18h42m_BG": {
+      "station": "Ut",
+      "trip-number": "5667"
+    },
+    "0d08h59m_BC": {
+      "station": "Amf",
+      "trip-number": "527"
+    },
+    "0d06h47m_BD": {
+      "station": "Rtd",
+      "trip-number": "2823"
+    },
+    "0d05h41m_AV": {
+      "station": "Lls",
+      "trip-number": "713"
+    },
+    "0d17h03m_AK": {
+      "station": "Amf",
+      "trip-number": "559"
+    },
+    "0d21h38m_BC": {
+      "station": "Zl",
+      "trip-number": "575"
+    },
+    "0d13h23m_AA": {
+      "station": "Ut",
+      "trip-number": "8842"
+    },
+    "0d04h57m_BC": {
+      "station": "Gn",
+      "trip-number": "516"
+    },
+    "0d16h41m_AB": {
+      "station": "Zl",
+      "trip-number": "555"
+    },
+    "0d13h12m_AS": {
+      "station": "Zl",
+      "trip-number": "1844"
+    },
+    "0d11h00m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15445"
+    },
+    "0d19h59m_BC": {
+      "station": "Rtd",
+      "trip-number": "575"
+    },
+    "0d13h56m_BC": {
+      "station": "Rtd",
+      "trip-number": "551"
+    },
+    "0d23h39m_BC": {
+      "station": "Gn",
+      "trip-number": "80473"
+    },
+    "0d21h27m_AQ": {
+      "station": "Lls",
+      "trip-number": "71866"
+    },
+    "1d01h07m_AO": {
+      "station": "Shl",
+      "trip-number": "24402"
+    },
+    "0d15h13m_AJ": {
+      "station": "Zl",
+      "trip-number": "649"
+    },
+    "0d08h59m_BD": {
+      "station": "Ut",
+      "trip-number": "2824"
+    },
+    "0d09h21m_AT": {
+      "station": "Ut",
+      "trip-number": "8826"
+    },
+    "0d07h42m_AW": {
+      "station": "Ledn",
+      "trip-number": "8827"
+    },
+    "0d11h00m_AL": {
+      "station": "Rtd",
+      "trip-number": "539"
+    },
+    "0d14h07m_AV": {
+      "station": "Lw",
+      "trip-number": "1852"
+    },
+    "0d13h23m_BD": {
+      "station": "Ut",
+      "trip-number": "2842"
+    },
+    "0d12h39m_AG": {
+      "station": "Lw",
+      "trip-number": "646"
+    },
+    "0d14h40m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15440"
+    },
+    "0d22h00m_AB": {
+      "station": "Amf",
+      "trip-number": "579"
+    },
+    "0d05h52m_AH": {
+      "station": "Ut",
+      "trip-number": "8812"
+    },
+    "0d09h10m_AJ": {
+      "station": "Zl",
+      "trip-number": "625"
+    },
+    "0d18h42m_AU": {
+      "station": "Zl",
+      "trip-number": "1863"
+    },
+    "0d10h16m_AY": {
+      "station": "Rtd",
+      "trip-number": "2837"
+    },
+    "0d15h57m_BE": {
+      "station": "Amf",
+      "trip-number": "555"
+    },
+    "0d16h19m_AY": {
+      "station": "Rtd",
+      "trip-number": "2861"
+    },
+    "0d22h55m_AW": {
+      "station": "Ut",
+      "trip-number": "8880"
+    },
+    "0d19h37m_AT": {
+      "station": "Gvc",
+      "trip-number": "2075"
+    },
+    "0d20h21m_AT": {
+      "station": "Ut",
+      "trip-number": "8870"
+    },
+    "0d17h03m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15469"
+    },
+    "0d10h05m_BF": {
+      "station": "Zvt",
+      "trip-number": "15422"
+    },
+    "0d17h25m_AH": {
+      "station": "Gvc",
+      "trip-number": "765"
+    },
+    "0d11h22m_AW": {
+      "station": "Ledn",
+      "trip-number": "8841"
+    },
+    "0d20h43m_AR": {
+      "station": "Zl",
+      "trip-number": "674"
+    },
+    "0d19h59m_AY": {
+      "station": "Ut",
+      "trip-number": "2868"
+    },
+    "0d17h47m_AY": {
+      "station": "Rtd",
+      "trip-number": "2867"
+    },
+    "0d20h43m_AX": {
+      "station": "Ledn",
+      "trip-number": "8879"
+    },
+    "0d08h26m_AR": {
+      "station": "Amf",
+      "trip-number": "622"
+    },
+    "0d13h45m_AT": {
+      "station": "Ledn",
+      "trip-number": "8851"
+    },
+    "0d08h37m_AI": {
+      "station": "Zl",
+      "trip-number": "523"
+    },
+    "0d15h57m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15465"
+    },
+    "0d07h42m_AF": {
+      "station": "Zl",
+      "trip-number": "519"
+    },
+    "0d11h44m_AA": {
+      "station": "Ut",
+      "trip-number": "2034"
+    },
+    "0d10h16m_AM": {
+      "station": "Zl",
+      "trip-number": "1832"
+    },
+    "0d17h14m_AT": {
+      "station": "Ledn",
+      "trip-number": "8865"
+    },
+    "0d17h47m_AM": {
+      "station": "Ledn",
+      "trip-number": "8867"
+    },
+    "0d06h03m_AF": {
+      "station": "Rtd",
+      "trip-number": "519"
+    },
+    "0d14h40m_AT": {
+      "station": "Ut",
+      "trip-number": "2046"
+    },
+    "0d16h08m_AF": {
+      "station": "Gn",
+      "trip-number": "560"
+    },
+    "0d23h17m_AC": {
+      "station": "Zl",
+      "trip-number": "1884"
+    },
+    "0d17h58m_BD": {
+      "station": "Ut",
+      "trip-number": "2860"
+    },
+    "0d06h14m_AD": {
+      "station": "Zl",
+      "trip-number": "613"
+    },
+    "0d12h39m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15432"
+    },
+    "0d20h10m_BD": {
+      "station": "Rtd",
+      "trip-number": "2877"
+    },
+    "1d00h12m_AP": {
+      "station": "Zl",
+      "trip-number": "785"
+    },
+    "0d18h31m_BF": {
+      "station": "Hlm",
+      "trip-number": "15475"
+    },
+    "0d08h15m_BB": {
+      "station": "Zl",
+      "trip-number": "1824"
+    },
+    "0d22h33m_BA": {
+      "station": "Lw",
+      "trip-number": "686"
+    },
+    "0d11h11m_BC": {
+      "station": "Gn",
+      "trip-number": "540"
+    },
+    "0d15h35m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15444"
+    },
+    "0d08h15m_BD": {
+      "station": "Rtd",
+      "trip-number": "2829"
+    },
+    "0d15h02m_BD": {
+      "station": "Ut",
+      "trip-number": "2848"
+    },
+    "0d13h56m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15457"
+    },
+    "0d16h30m_AG": {
+      "station": "Amf",
+      "trip-number": "657"
+    },
+    "0d12h28m_AY": {
+      "station": "Ut",
+      "trip-number": "2838"
+    },
+    "0d17h47m_AO": {
+      "station": "Zl",
+      "trip-number": "1859"
+    },
+    "0d07h42m_BA": {
+      "station": "Zl",
+      "trip-number": "722"
+    },
+    "0d20h43m_AC": {
+      "station": "Zl",
+      "trip-number": "1871"
+    },
+    "0d12h06m_AS": {
+      "station": "Lw",
+      "trip-number": "1844"
+    },
+    "0d20h10m_AL": {
+      "station": "Gn",
+      "trip-number": "576"
+    },
+    "0d09h32m_BF": {
+      "station": "Hlm",
+      "trip-number": "15439"
+    },
+    "0d07h42m_AM": {
+      "station": "Zl",
+      "trip-number": "1819"
+    },
+    "0d20h43m_AP": {
+      "station": "Zl",
+      "trip-number": "774"
+    },
+    "0d10h38m_AZ": {
+      "station": "Zvt",
+      "trip-number": "15424"
+    },
+    "0d06h47m_BG": {
+      "station": "Ut",
+      "trip-number": "5619"
+    },
+    "0d16h52m_AM": {
+      "station": "Ut",
+      "trip-number": "8856"
+    },
+    "0d11h11m_BF": {
+      "station": "Zvt",
+      "trip-number": "15426"
+    },
+    "0d08h37m_AV": {
+      "station": "Zl",
+      "trip-number": "726"
+    },
+    "0d15h13m_AA": {
+      "station": "Ut",
+      "trip-number": "2048"
+    },
+    "0d17h14m_BD": {
+      "station": "Rtd",
+      "trip-number": "2865"
+    },
+    "0d06h58m_AF": {
+      "station": "Amf",
+      "trip-number": "519"
+    },
+    "0d17h03m_BA": {
+      "station": "Gvc",
+      "trip-number": "1863"
+    },
+    "0d20h54m_AW": {
+      "station": "Ut",
+      "trip-number": "8872"
+    },
+    "0d10h16m_AF": {
+      "station": "Gn",
+      "trip-number": "536"
+    },
+    "0d08h04m_AQ": {
+      "station": "Rtd",
+      "trip-number": "527"
+    },
+    "0d22h55m_AL": {
+      "station": "Rtd",
+      "trip-number": "587"
+    },
+    "0d14h29m_BF": {
+      "station": "Hlm",
+      "trip-number": "15459"
+    },
+    "0d09h54m_AP": {
+      "station": "Gvc",
+      "trip-number": "1835"
+    },
+    "0d10h27m_BB": {
+      "station": "Gvc",
+      "trip-number": "737"
+    },
+    "0d08h15m_AN": {
+      "station": "Gn",
+      "trip-number": "528"
+    },
+    "0d23h17m_AN": {
+      "station": "Zl",
+      "trip-number": "681"
+    },
+    "0d22h44m_AB": {
+      "station": "Zl",
+      "trip-number": "579"
+    },
+    "0d18h09m_AP": {
+      "station": "Zl",
+      "trip-number": "761"
+    },
+    "0d22h11m_AC": {
+      "station": "Lw",
+      "trip-number": "1884"
+    },
+    "0d19h15m_BI": {
+      "station": "Gn",
+      "trip-number": "572"
+    },
+    "0d19h15m_AB": {
+      "station": "Zl",
+      "trip-number": "568"
+    },
+    "0d19h04m_BE": {
+      "station": "Rtd",
+      "trip-number": "571"
+    },
+    "0d14h18m_BG": {
+      "station": "Zl",
+      "trip-number": "5650"
+    },
+    "0d17h47m_BH": {
+      "station": "Zl",
+      "trip-number": "762"
+    },
+    "0d23h28m_AS": {
+      "station": "Gvc",
+      "trip-number": "789"
+    },
+    "0d14h29m_AJ": {
+      "station": "Amf",
+      "trip-number": "649"
+    },
+    "0d12h50m_AT": {
+      "station": "Ut",
+      "trip-number": "8840"
+    },
+    "0d18h09m_AD": {
+      "station": "Zl",
+      "trip-number": "661"
+    },
+    "0d18h20m_AJ": {
+      "station": "Amf",
+      "trip-number": "662"
+    },
+    "0d21h05m_AB": {
+      "station": "Rtd",
+      "trip-number": "579"
+    },
+    "0d21h16m_AJ": {
+      "station": "Zl",
+      "trip-number": "673"
+    },
+    "0d20h32m_AJ": {
+      "station": "Amf",
+      "trip-number": "673"
+    },
+    "0d15h46m_BD": {
+      "station": "Rtd",
+      "trip-number": "2859"
+    },
+    "0d23h17m_BE": {
+      "station": "Zl",
+      "trip-number": "584"
+    },
+    "0d09h43m_BD": {
+      "station": "Rtd",
+      "trip-number": "2835"
+    },
+    "0d10h27m_AG": {
+      "station": "Amf",
+      "trip-number": "633"
+    },
+    "0d11h33m_AD": {
+      "station": "Amf",
+      "trip-number": "637"
+    },
+    "0d15h24m_AD": {
+      "station": "Amf",
+      "trip-number": "650"
+    },
+    "0d17h58m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15473"
+    },
+    "0d12h06m_BA": {
+      "station": "Zl",
+      "trip-number": "737"
+    },
+    "0d06h03m_AM": {
+      "station": "Gvc",
+      "trip-number": "1819"
+    },
+    "0d15h46m_AC": {
+      "station": "Gn",
+      "trip-number": "758"
+    },
+    "0d11h55m_AZ": {
+      "station": "Hlm",
+      "trip-number": "15449"
+    },
+    "0d20h43m_AY": {
+      "station": "Rtd",
+      "trip-number": "2879"
+    },
+    "0d07h31m_AJ": {
+      "station": "Rtd",
+      "trip-number": "625"
+    },
+    "0d12h39m_AV": {
+      "station": "Zl",
+      "trip-number": "1839"
+    },
+    "0d21h05m_BC": {
+      "station": "Amf",
+      "trip-number": "575"
+    },
+    "0d16h41m_AC": {
+      "station": "Zl",
+      "trip-number": "758"
+    },
+    "0d12h17m_AD": {
+      "station": "Zl",
+      "trip-number": "637"
+    },
+    "0d11h11m_AG": {
+      "station": "Zl",
+      "trip-number": "633"
+    },
+    "0d15h24m_AY": {
+      "station": "Ut",
+      "trip-number": "2850"
+    },
+    "0d22h11m_BE": {
+      "station": "Gn",
+      "trip-number": "584"
+    },
+    "0d14h40m_AD": {
+      "station": "Zl",
+      "trip-number": "650"
+    },
+    "0d15h13m_AV": {
+      "station": "Zl",
+      "trip-number": "1852"
+    },
+    "0d09h32m_AW": {
+      "station": "Gvc",
+      "trip-number": "2035"
+    },
+    "0d13h34m_BF": {
+      "station": "Hlm",
+      "trip-number": "15455"
+    },
+    "0d08h48m_AY": {
+      "station": "Rtd",
+      "trip-number": "2831"
+    },
+    "0d12h17m_BE": {
+      "station": "Gn",
+      "trip-number": "544"
+    },
+    "0d13h23m_BH": {
+      "station": "Gvc",
+      "trip-number": "749"
+    },
+    "0d16h19m_AX": {
+      "station": "Ut",
+      "trip-number": "8854"
+    },
+    "0d17h03m_AY": {
+      "station": "Ut",
+      "trip-number": "2856"
+    },
+    "0d13h45m_AW": {
+      "station": "Ut",
+      "trip-number": "8844"
+    },
+    "0d22h44m_AX": {
+      "station": "Ledn",
+      "trip-number": "8887"
+    },
+    "0d19h15m_AO": {
+      "station": "Lw",
+      "trip-number": "1872"
+    },
+    "0d06h03m_AW": {
+      "station": "Gvc",
+      "trip-number": "2021"
+    },
+    "0d06h58m_BC": {
+      "station": "Amf",
+      "trip-number": "516"
+    },
+    "0d06h03m_BI": {
+      "station": "Gn",
+      "trip-number": "520"
+    },
+    "0d09h21m_AD": {
+      "station": "Amf",
+      "trip-number": "626"
+    },
+    "0d07h42m_AD": {
+      "station": "Lw",
+      "trip-number": "626"
+    },
+    "0d06h58m_BH": {
+      "station": "Gvc",
+      "trip-number": "1823"
+    },
+    "0d07h42m_AV": {
+      "station": "Gn",
+      "trip-number": "726"
+    },
+    "0d10h38m_AS": {
+      "station": "Zl",
+      "trip-number": "1831"
+    },
+    "0d12h39m_AO": {
+      "station": "Gn",
+      "trip-number": "746"
+    }
+  }
+}

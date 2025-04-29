@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { MasterStoryline } from "../io/sgb"
 import { align } from "../model/Align";
-import { Storyline, WithAlignedGroups } from "../model/Storyline";
+import { Storyline, WithAlignedGroups, WithLayerDescriptions } from "../model/Storyline";
 import { StorylineComponent } from "./StorylineComponent";
 import { SelectFile } from "./StorylineFromFile";
 import "./PKColors.css";
 
 type Props = {};
-type State = { kind: 'ready' | 'processing' } | { kind: 'show', story: Storyline<WithAlignedGroups> };
+type State = { kind: 'ready' | 'processing' } | { kind: 'show', story: Storyline<WithAlignedGroups, WithLayerDescriptions> };
 
 
 export const App = ({ }: Props) => {
@@ -15,7 +15,7 @@ export const App = ({ }: Props) => {
 
   const handleStory = (story: MasterStoryline) => {
     setState({ kind: 'processing' });
-    align(story, 'sum-of-heights', 1).then(aligned => setState({ kind: 'show', story: aligned! }));
+    align(story, 'strict-center', 1).then(aligned => setState({ kind: 'show', story: aligned! }));
   }
 
   if (state.kind === 'ready') {

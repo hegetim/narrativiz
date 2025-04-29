@@ -3,8 +3,8 @@ import { Storyline, WithAlignedGroups } from "./Storyline";
 import { assertThat, ifDefined, matchByKind, matchString, windows2 } from "./Utils";
 
 const minRadius = 1;
-const meetingWidth = 1;
-const minLayerWidth = 2;
+const meetingWidth = 0.5;
+const minLayerWidth = 0.8;
 const eps = 1e-6;
 
 type JustifyConfig = {
@@ -130,7 +130,7 @@ const mkBlocks = <T extends {}>(
   return res;
 }
 
-const mkFragsUniform = (story: Storyline<WithAlignedGroups>, layers: Stage2A[][], width: number) => [
+const mkFragsUniform = (story: Storyline<WithAlignedGroups>, layers: Stage2A[][], width: number): DrawingFrag[] => [
   ...layers.flatMap((layer, i) => layer.map<DrawingFrag>(item => matchByKind(item, {
     "char-init": ci => ({
       kind: "char-init",
@@ -152,6 +152,8 @@ const mkFragsUniform = (story: Storyline<WithAlignedGroups>, layers: Stage2A[][]
     pos: { x: (i + 1) * width - meetingWidth, y: g.atY },
     dx: meetingWidth,
     dy: g.characters.length - 1,
+    layer: i,
+    topChar: g.charactersOrdered[0]!,
   }))),
 ];
 
@@ -159,7 +161,7 @@ const mkFragsCondensed = (story: Storyline<WithAlignedGroups>, layers: Stage2A[]
   assertThat(story.layers.length === layers.length, "number of storyline layers and calculated layers did not match");
   const result: DrawingFrag[] = [];
   let x = 0;
-  for (let [sl, s2a] of _.zip(story.layers, layers)) {
+  _.zip(story.layers, layers).forEach(([sl, s2a], i) => {
     const width = Math.max(...mkWidth(s2a!), minLayerWidth);
     result.push(...s2a!.map<DrawingFrag>(item => matchByKind(item, {
       "char-init": ci => ({
@@ -181,9 +183,11 @@ const mkFragsCondensed = (story: Storyline<WithAlignedGroups>, layers: Stage2A[]
       pos: { x: x + width - meetingWidth, y: g.atY },
       dx: meetingWidth,
       dy: g.characters.length - 1,
+      layer: i,
+      topChar: g.charactersOrdered[0]!,
     })));
     x += width;
-  }
+  });
   return result;
 }
 
@@ -213,5 +217,5 @@ export type SLine = { dx: number, dy: number, bs: number, offset: number }
 
 export type DrawingFrag = { kind: 'char-init', char: CharState, pos: Pos, dx: number }
   | { kind: 'char-line', char: CharState, pos: Pos, sLine: SLine, dx: number }
-  | { kind: 'meeting', pos: Pos, dx: number, dy: number }
+  | { kind: 'meeting', pos: Pos, dx: number, dy: number, layer: number, topChar: string }
 
