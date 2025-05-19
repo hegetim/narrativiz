@@ -1,0 +1,11 @@
+/* SPDX-FileCopyrightText: 2025 Tim Hegemann <hegemann@informatik.uni-wuerzburg.de>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+.settings-container {
+  margin: 1ex;
+  display: grid;
+  grid-template-columns: minmax(4rem, auto) minmax(auto, 1fr);
+  row-gap: 0.3ex;
+  column-gap: 1ex;
+}

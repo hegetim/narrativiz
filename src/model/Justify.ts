@@ -7,7 +7,7 @@ const meetingWidth = 0.5;
 const minLayerWidth = 0.8;
 const eps = 1e-6;
 
-type JustifyConfig = {
+export type JustifyConfig = {
   layerStyle: 'uniform' | 'condensed',
   blockHandling: 'full' | 'continuous'
 }

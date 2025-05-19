@@ -4,7 +4,7 @@
 
 import React from "react";
 import { matchByKind, pushMMap, unimplemented, windows2 } from "../model/Utils";
-import { corners, DrawingFrag, justifyLayers, SLine } from "../model/Justify";
+import { corners, DrawingFrag, JustifyConfig, justifyLayers, SLine } from "../model/Justify";
 import { Storyline, WithAlignedGroups, WithLayerDescriptions } from "../model/Storyline";
 import { sPathFrag } from "./DrawingUtils";
 import xxStory from "../static/story.json";
@@ -27,20 +27,24 @@ const xMeta = xxMeta as {
   }
 }
 
-const oneDistance = 40;
-
 type Props = {
-  story: Storyline<WithAlignedGroups, WithLayerDescriptions>
+  story: Storyline<WithAlignedGroups, WithLayerDescriptions>,
+  oneDistance: number,
+  layerStyle: JustifyConfig['layerStyle'],
+  blockHandling: JustifyConfig['blockHandling']
 };
 
-export const StorylineComponent = ({ story }: Props) => {
+export const StorylineComponent = ({ story, oneDistance, layerStyle, blockHandling }: Props) => {
   console.log(JSON.stringify(story));
-  const justified = justifyLayers(story, { layerStyle: 'condensed', blockHandling: 'continuous' });
+  const justified = justifyLayers(story, { layerStyle, blockHandling });
   const [x, y, w, h] = bbox(justified.flatMap(corners), oneDistance);
-  return <svg viewBox={`${x - 10} ${y - 10} ${w + 20} ${w + 20}`} width={w + 20}>{drawFrags(justified)}</svg>;
+  return <div className="storyline-container">
+    <svg viewBox={`${x - 10} ${y - 10} ${w + 20} ${h + 20}`} width={w + 30}>{drawFrags(oneDistance, justified)}</svg>
+  </div>;
 }
 
 export const FakeStoryComponent = ({ }: {}) => {
+  const oneDistance = 40
   const justified = justifyLayers(xStory, { layerStyle: 'condensed', blockHandling: 'continuous' });
   const [x, y, w, h] = bbox(justified.flatMap(corners), oneDistance);
   return <svg viewBox={`${x - 100} ${y - 100} ${w + 300} ${h + 300}`} width={w + 200}>
@@ -50,10 +54,10 @@ export const FakeStoryComponent = ({ }: {}) => {
         <feComposite in="SourceGraphic" operator="over" />
       </filter>
     </defs>
-    {annotateLayers(justified, y - 100, y + h + 200)}
-    {drawFrags(justified)}
-    {annotateFrags(justified)}
-    {annotateTerminals(justified)}
+    {annotateLayers(oneDistance, justified, y - 100, y + h + 200)}
+    {drawFrags(oneDistance, justified)}
+    {annotateFrags(oneDistance, justified)}
+    {annotateTerminals(oneDistance, justified)}
   </svg>;
 }
 
@@ -65,7 +69,7 @@ const bbox = (pts: (readonly [number, number])[], s: number = 1) => {
   return [xmin * s, ymin * s, (xmax - xmin) * s, (ymax - ymin) * s] as const;
 }
 
-const drawFrags = (frags: DrawingFrag[]) => {
+const drawFrags = (oneDistance: number, frags: DrawingFrag[]) => {
   const pathFrags: Map<string, string[]> = new Map();
   const meetingFrags: string[] = [];
   const s = oneDistance;
@@ -89,7 +93,7 @@ const scale = ({ dx, dy, bs, offset }: SLine, s: number): SLine => ({ dx: s * dx
 const meeting = (top: readonly [number, number], r: number, h: number) =>
   `M ${top[0] - r} ${top[1]} a ${r} ${r} 0 0 1 ${2 * r} 0 v ${h} a ${r} ${r} 0 0 1 ${-2 * r} 0 v ${-h}`;
 
-const annotateFrags = (frags: DrawingFrag[]) => {
+const annotateFrags = (oneDistance: number, frags: DrawingFrag[]) => {
   const s = oneDistance;
   const meetingId = (m: DrawingFrag & { kind: 'meeting' }) => `${xStory.layers[m.layer]?.layerDescription}_${m.topChar}`;
 
@@ -107,7 +111,7 @@ const annotateFrags = (frags: DrawingFrag[]) => {
 
 }
 
-const annotateTerminals = (frags: DrawingFrag[]) => {
+const annotateTerminals = (oneDistance: number, frags: DrawingFrag[]) => {
   const s = oneDistance;
   const terms = new Map<string, readonly [number, number]>();
   frags.forEach(frag => matchByKind(frag, {
@@ -120,7 +124,7 @@ const annotateTerminals = (frags: DrawingFrag[]) => {
   </React.Fragment>;
 }
 
-const annotateLayers = (frags: DrawingFrag[], ymin: number, ymax: number) => {
+const annotateLayers = (oneDistance: number, frags: DrawingFrag[], ymin: number, ymax: number) => {
   const s = oneDistance;
   const layers: { x: number, text: string }[] = [];
   frags.forEach(frag => matchByKind(frag, {
