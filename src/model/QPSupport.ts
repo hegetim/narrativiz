@@ -26,7 +26,7 @@ type QPQuadratic = { kind: 'quadratic', varIds: string[], m: number[][], lin: QP
 export type QPTerm = QPLinear | QPQuadratic;
 
 export type QPConstraint = {
-  kind: '<=' | '=='
+  kind: '<=' | '='
   left: QPTerm
   right: number
 }
@@ -46,7 +46,7 @@ const linear = (varIds: string[], a: number[], c: number): QPLinear => ({
   squared: () => timesLin(linear(varIds, a, c), linear(varIds, a, c)),
   lessThanOrEqual: other => constraint('<=', linear(varIds, a, c), other),
   greaterThanOrEqual: other => constraint('<=', other, linear(varIds, a, c)),
-  equalTo: other => constraint('==', linear(varIds, a, c), other),
+  equalTo: other => constraint('=', linear(varIds, a, c), other),
 });
 
 const quadratic = (varIds: string[], m: number[][], lin: QPLinear): QPQuadratic => ({
@@ -58,7 +58,7 @@ const quadratic = (varIds: string[], m: number[][], lin: QPLinear): QPQuadratic 
   scale: other => quadratic(varIds, m.map(l => l.map(x => other * x)), lin.scale(other)),
   lessThanOrEqual: other => constraint('<=', quadratic(varIds, m, lin), other),
   greaterThanOrEqual: other => constraint('<=', other, quadratic(varIds, m, lin)),
-  equalTo: other => constraint('==', quadratic(varIds, m, lin), other),
+  equalTo: other => constraint('=', quadratic(varIds, m, lin), other),
 })
 
 const constraint = (kind: QPConstraint['kind'], left: QPTerm, right: QPTerm): QPConstraint =>
@@ -162,7 +162,7 @@ export const stringify = (t: QPTerm | QPConstraint): string => matchByKind(t, {
   linear: l => fmtL(l),
   quadratic: q => fmtQ(q),
   "<=": c => fmtC(c),
-  "==": c => fmtC(c),
+  "=": c => fmtC(c),
 })
 
 const fmtL = (l: QPLinear) => _.zip(l.varIds, l.a).reduce((s, [id, m]) => {

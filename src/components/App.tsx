@@ -20,7 +20,7 @@ export const App = ({ }: Props) => {
 
   useEffect(() => {
     if (state.kind === 'processing') {
-      align(state.story, config.alignmentMode, config.gapRatio)
+      align(state.story, config.alignmentMode, config.gapRatio, config.alignContinuedMeetings)
         .then(aligned => setState({ kind: 'show', story: aligned! }));
     }
   }, [state]);
@@ -29,7 +29,7 @@ export const App = ({ }: Props) => {
     if (state.kind === 'show') {
       setState({ kind: 'processing', story: state.story })
     }
-  }, [config.alignmentMode, config.gapRatio]);
+  }, [config.alignmentMode, config.gapRatio, config.alignContinuedMeetings]);
 
   if (state.kind === 'ready') {
     return <SelectFile onSuccess={story => setState({ kind: 'processing', story })} />;

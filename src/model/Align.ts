@@ -14,10 +14,11 @@ type InGroup = { groupId: string, offset: number };
 type CharLines = Map<string, InGroup[]>;
 
 export const align = async <S extends {}, L extends {}, G extends {}>(
-  r: Storyline<WithRealizedGroups & S, L, G>,
+  r: Storyline<WithRealizedGroups & G, L, S>,
   mode: AlignCriterion,
-  gapRatio: number
-): Promise<Storyline<WithAlignedGroups & S, L, G> | undefined> => {
+  gapRatio: number,
+  alignContinuedMeetings: boolean,
+): Promise<Storyline<WithAlignedGroups & G, L, S> | undefined> => {
   const characters: CharLines = new Map();
   const yConstraints: QPConstraint[] = [];
 
@@ -40,11 +41,13 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
     });
   });
 
+  const cConstraints = alignContinuedMeetings ? continuedMeetings(r) : [];
+
   return matchString(mode, {
-    "least-squares": () => solve(r, fmtQP(yConstraints, optSqr(characters), 'min')),
+    "least-squares": () => solve(r, fmtQP([...yConstraints, ...cConstraints], optSqr(characters), 'min')),
     "sum-of-heights": () => {
       const [zConstraints, obj] = mkSumOfHeights(characters);
-      return solve(r, fmtQP(yConstraints.concat(...zConstraints), obj, 'min'));
+      return solve(r, fmtQP([...yConstraints, ...zConstraints, ...cConstraints], obj, 'min'));
     },
     "strict-center": () => alignCenter(r)
   });
@@ -67,6 +70,30 @@ const mkSumOfHeights = (cl: CharLines): [QPConstraint[], QPTerm] => {
     })];
   const opt = _.range(0, constraints.length / 2).reduce((sum, i) => sum.plus(qpVar(`z${i}`)), qpNum(0));
   return [constraints, opt];
+}
+
+const continuedMeetings = (story: Storyline<WithRealizedGroups>) => {
+  const lut = new Map<string, [string, number]>();  // char_id -> [group_id, group_size]
+  const res: QPConstraint[] = [];
+  story.layers.forEach((layer, i) => {
+    layer.groups.forEach((group, j) => {
+      const groupId = `l${i}g${j}`;
+      let prevId: string | undefined = undefined;
+      const groupSize = group.charactersOrdered.length;
+      let continued = groupSize > 1;
+      group.charactersOrdered.forEach(char => {
+        const tmp = lut.get(char)
+        if (tmp === undefined || tmp[1] !== groupSize) { continued = false; }
+        else {
+          prevId = tmp[0];
+          continued = continued && (prevId == lut.get(char)?.[0]);
+        }
+        lut.set(char, [groupId, groupSize]);
+      });
+      if (continued) { res.push(qpVar(prevId!).equalTo(qpVar(groupId))); }
+    });
+  });
+  return res;
 }
 
 // todo: add proper error handling

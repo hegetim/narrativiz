@@ -16,12 +16,15 @@ const xMeta = xxMeta as {
     [index: string]: {
       "wagon-type": string,
       "start-station": string,
-      "end-station": string,
+      // "end-station": string,
     }
   },
   meetings: {
     [index: string]: {
-      station: string,
+      "departure-station": string,
+      "departure-time": string,
+      "arrival-station": string,
+      "arrival-time": string,
       "trip-number": string,
     }
   }
@@ -57,7 +60,7 @@ export const FakeStoryComponent = ({ }: {}) => {
     {annotateLayers(oneDistance, justified, y - 100, y + h + 200)}
     {drawFrags(oneDistance, justified)}
     {annotateFrags(oneDistance, justified)}
-    {annotateTerminals(oneDistance, justified)}
+    {/* {annotateTerminals(oneDistance, justified)} */}
   </svg>;
 }
 
@@ -104,25 +107,25 @@ const annotateFrags = (oneDistance: number, frags: DrawingFrag[]) => {
       "char-line": cl => [""],
       meeting: m => [
         <text key={`${i}mr`} x={(m.pos.x + m.dx) * s + 5} y={(m.pos.y + m.dy / 2) * s + 6} textAnchor="start" filter="url(#solid)">{xMeta.meetings[meetingId(m)]!["trip-number"]}</text>,
-        <text key={`${i}mt`} x={(m.pos.x + m.dx / 2) * s} y={(m.pos.y - m.dx / 3) * s - 3} textAnchor="middle">{xMeta.meetings[meetingId(m)]!.station}</text>,
+        <text key={`${i}mt`} x={(m.pos.x + m.dx / 2) * s} y={(m.pos.y - m.dx / 3) * s - 3} textAnchor="middle">{xMeta.meetings[meetingId(m)]!["departure-station"]}</text>,
       ],
     }))]}
   </React.Fragment>
 
 }
 
-const annotateTerminals = (oneDistance: number, frags: DrawingFrag[]) => {
-  const s = oneDistance;
-  const terms = new Map<string, readonly [number, number]>();
-  frags.forEach(frag => matchByKind(frag, {
-    "char-init": () => { },
-    "char-line": cl => terms.set(cl.char.id, [cl.pos.x + cl.dx, cl.pos.y + cl.sLine.dy]),
-    meeting: () => { }
-  }));
-  return <React.Fragment>
-    {[...terms.entries().map(([id, pos]) => <text key={id} x={pos[0] * s + 80} y={pos[1] * s + 6}>{xMeta.chars[id]!['end-station']}</text>)]}
-  </React.Fragment>;
-}
+// const annotateTerminals = (oneDistance: number, frags: DrawingFrag[]) => {
+//   const s = oneDistance;
+//   const terms = new Map<string, readonly [number, number]>();
+//   frags.forEach(frag => matchByKind(frag, {
+//     "char-init": () => { },
+//     "char-line": cl => terms.set(cl.char.id, [cl.pos.x + cl.dx, cl.pos.y + cl.sLine.dy]),
+//     meeting: () => { }
+//   }));
+//   return <React.Fragment>
+//     {[...terms.entries().map(([id, pos]) => <text key={id} x={pos[0] * s + 80} y={pos[1] * s + 6}>{xMeta.chars[id]!['end-station']}</text>)]}
+//   </React.Fragment>;
+// }
 
 const annotateLayers = (oneDistance: number, frags: DrawingFrag[], ymin: number, ymax: number) => {
   const s = oneDistance;

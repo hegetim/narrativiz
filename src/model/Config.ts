@@ -11,6 +11,7 @@ export type UserConfig = {
   oneDistance: number,
   alignmentMode: AlignCriterion,
   gapRatio: number,
+  alignContinuedMeetings: boolean,
 }
 
 export const defaultConfig: UserConfig = {
@@ -19,4 +20,5 @@ export const defaultConfig: UserConfig = {
   oneDistance: 20,
   alignmentMode: "sum-of-heights",
   gapRatio: 1.0,
+  alignContinuedMeetings: false,
 }

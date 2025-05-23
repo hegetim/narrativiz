@@ -43,6 +43,11 @@ export const SettingsComponent = ({ config, setConfig }: Props) => {
     <SelectButton<GapCategory> value={toGapCategory(config.gapRatio)}
       labels={{ "0.5": "0.5", "1.0": "1.0", "1.5": "1.5", "2.0": "2.0" }}
       setValue={value => commit(c => c.gapRatio = fromGapCategory(value))} />
+
+    <div {...cls("settings-label")}>continued meetings</div>
+    <BinarySelect<"true" | "false"> value={`${config.alignContinuedMeetings}`}
+      options={{ left: ["false", "ignore"], right: ["true", "align"] }}
+      toggle={() => commit(c => c.alignContinuedMeetings = !c.alignContinuedMeetings)} />
   </div>
 }
 
