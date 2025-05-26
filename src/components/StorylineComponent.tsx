@@ -16,7 +16,6 @@ const xMeta = xxMeta as {
     [index: string]: {
       "wagon-type": string,
       "start-station": string,
-      // "end-station": string,
     }
   },
   meetings: {
@@ -60,7 +59,6 @@ export const FakeStoryComponent = ({ }: {}) => {
     {annotateLayers(oneDistance, justified, y - 100, y + h + 200)}
     {drawFrags(oneDistance, justified)}
     {annotateFrags(oneDistance, justified)}
-    {/* {annotateTerminals(oneDistance, justified)} */}
   </svg>;
 }
 
@@ -87,7 +85,8 @@ const drawFrags = (oneDistance: number, frags: DrawingFrag[]) => {
     {[...pathFrags.entries().map(([id, frags]) =>
       <path key={id} d={frags.join(" ")} stroke="black" strokeWidth={3} fill="none" />
     )]}
-    {meetingFrags.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)}
+    {/* {meetingFrags.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)} */}
+    {mkContinuedMeetings(frags, oneDistance)}
   </React.Fragment>
 }
 
@@ -96,36 +95,37 @@ const scale = ({ dx, dy, bs, offset }: SLine, s: number): SLine => ({ dx: s * dx
 const meeting = (top: readonly [number, number], r: number, h: number) =>
   `M ${top[0] - r} ${top[1]} a ${r} ${r} 0 0 1 ${2 * r} 0 v ${h} a ${r} ${r} 0 0 1 ${-2 * r} 0 v ${-h}`;
 
+const mkContinuedMeetings = (frags: DrawingFrag[], s: number) => {
+  const mFrags: React.JSX.Element[] = [];
+  frags.forEach((frag, i) => matchByKind(frag, {
+    "char-init": () => { },
+    "char-line": () => { },
+    meeting: m => {
+      const fill = xMeta.meetings[meetingId(m)] === undefined ? "red" : "blue"
+      const path = meeting([(m.pos.x + m.dx / 2) * s, m.pos.y * s], m.dx * s / 3, m.dy * s);
+      mFrags.push(<path key={'m' + i} d={path} stroke="black" strokeWidth={1} fill={fill} />);
+    }
+  }));
+  return mFrags;
+}
+
+const meetingId = (m: DrawingFrag & { kind: 'meeting' }) => `${xStory.layers[m.layer]?.layerDescription}_${m.topChar}`;
+
 const annotateFrags = (oneDistance: number, frags: DrawingFrag[]) => {
   const s = oneDistance;
-  const meetingId = (m: DrawingFrag & { kind: 'meeting' }) => `${xStory.layers[m.layer]?.layerDescription}_${m.topChar}`;
 
   return <React.Fragment>
     {[...frags.flatMap<React.ReactNode>((f, i) => matchByKind(f, {
-      "char-init": ci => [""],
-      // <text key={ci.char.id + '-'} x={ci.pos.x * s - 5} y={ci.pos.y * s} textAnchor="end">{xMeta.chars[ci.char.id]!['start-station']}</text>
+      "char-init": ci =>
+        [<text key={ci.char.id + '-'} x={ci.pos.x * s - 5} y={ci.pos.y * s} textAnchor="end">{ci.char.id}</text>],
       "char-line": cl => [""],
       meeting: m => [
-        <text key={`${i}mr`} x={(m.pos.x + m.dx) * s + 5} y={(m.pos.y + m.dy / 2) * s + 6} textAnchor="start" filter="url(#solid)">{xMeta.meetings[meetingId(m)]!["trip-number"]}</text>,
-        <text key={`${i}mt`} x={(m.pos.x + m.dx / 2) * s} y={(m.pos.y - m.dx / 3) * s - 3} textAnchor="middle">{xMeta.meetings[meetingId(m)]!["departure-station"]}</text>,
+        // <text key={`${i}mr`} x={(m.pos.x + m.dx) * s + 5} y={(m.pos.y + m.dy / 2) * s + 6} textAnchor="start" filter="url(#solid)">{xMeta.meetings[meetingId(m)]!["trip-number"]}</text>,
+        // <text key={`${i}mt`} x={(m.pos.x + m.dx / 2) * s} y={(m.pos.y - m.dx / 3) * s - 3} textAnchor="middle">{xMeta.meetings[meetingId(m)]!["departure-station"]}</text>,
       ],
     }))]}
   </React.Fragment>
-
 }
-
-// const annotateTerminals = (oneDistance: number, frags: DrawingFrag[]) => {
-//   const s = oneDistance;
-//   const terms = new Map<string, readonly [number, number]>();
-//   frags.forEach(frag => matchByKind(frag, {
-//     "char-init": () => { },
-//     "char-line": cl => terms.set(cl.char.id, [cl.pos.x + cl.dx, cl.pos.y + cl.sLine.dy]),
-//     meeting: () => { }
-//   }));
-//   return <React.Fragment>
-//     {[...terms.entries().map(([id, pos]) => <text key={id} x={pos[0] * s + 80} y={pos[1] * s + 6}>{xMeta.chars[id]!['end-station']}</text>)]}
-//   </React.Fragment>;
-// }
 
 const annotateLayers = (oneDistance: number, frags: DrawingFrag[], ymin: number, ymax: number) => {
   const s = oneDistance;
@@ -141,7 +141,7 @@ const annotateLayers = (oneDistance: number, frags: DrawingFrag[], ymin: number,
         return [<rect key={key} x={x1 * s} y={ymin} width={(x2 - x1) * s} height={ymax - ymin} stroke="none" fill="lightblue" opacity={0.25} />];
       } else { return []; }
     })}
-    {layers.map(({ x, text }) => <text key={text} x={x * s + 3} y={ymax - 60}>{mkNice(text)}</text>)}
+    {layers.map(({ x, text }, i) => <text key={text} x={x * s + 3} y={ymax - 60 + (i % 2) * 20}>{mkNice(text)}</text>)}
   </React.Fragment>
 }
 
