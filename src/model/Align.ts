@@ -2,11 +2,35 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { Storyline, StorylineLayer, WithAlignedGroups, WithRealizedGroups } from './Storyline';
+import { Storyline, StorylineLayer, WithAlignedGroups, WithLayerDescriptions, WithRealizedGroups } from './Storyline';
 import { matchString, pushMMap, unimplemented, windows2 } from './Utils';
 import { fmtQP, QPConstraint, qpNum, QPTerm, qpVar } from './QPSupport';
 import highsLoader from 'highs';
 import _ from 'lodash';
+
+// TODO KILL THIS
+import xxStory from "../static/story.json";
+import xxMeta from "../static/meta.json";
+
+const xStory = xxStory as Storyline<WithAlignedGroups, WithLayerDescriptions>;
+const xMeta = xxMeta as {
+  chars: {
+    [index: string]: {
+      "wagon-type": string,
+      "start-station": string,
+    }
+  },
+  meetings: {
+    [index: string]: {
+      "departure-station": string,
+      "departure-time": string,
+      "arrival-station": string,
+      "arrival-time": string,
+      "trip-number": string,
+    }
+  }
+}
+// TODO KILL THIS
 
 export type AlignCriterion = "sum-of-heights" | "least-squares" | "strict-center";
 
@@ -91,6 +115,13 @@ const continuedMeetings = (story: Storyline<WithRealizedGroups>) => {
         lut.set(char, [groupId, groupSize]);
       });
       if (continued) { res.push(qpVar(prevId!).equalTo(qpVar(groupId))); }
+      // only for fake storylines!!
+      else if (group.kind === 'active' && groupSize == 1) {
+        const meetingId = `${xStory.layers[i]?.layerDescription}_${group.charactersOrdered[0]}`;
+        const continued = xMeta.meetings[meetingId] === undefined;
+        if (continued && prevId !== undefined) { res.push(qpVar(prevId!).equalTo(qpVar(groupId))); }
+      }
+      // end only for fake storylines
     });
   });
   return res;

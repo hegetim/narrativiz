@@ -4,7 +4,7 @@
 
 import React from "react";
 import { matchByKind, pushMMap, unimplemented, windows2 } from "../model/Utils";
-import { corners, DrawingFrag, JustifyConfig, justifyLayers, SLine } from "../model/Justify";
+import { corners, DrawingFrag, JustifyConfig, justifyLayers, Pos, SLine } from "../model/Justify";
 import { Storyline, WithAlignedGroups, WithLayerDescriptions } from "../model/Storyline";
 import { sPathFrag } from "./DrawingUtils";
 import xxStory from "../static/story.json";
@@ -58,7 +58,7 @@ export const FakeStoryComponent = ({ }: {}) => {
     </defs>
     {annotateLayers(oneDistance, justified, y - 100, y + h + 200)}
     {drawFrags(oneDistance, justified)}
-    {annotateFrags(oneDistance, justified)}
+    {/* {annotateFrags(oneDistance, justified)} */}
   </svg>;
 }
 
@@ -95,18 +95,76 @@ const scale = ({ dx, dy, bs, offset }: SLine, s: number): SLine => ({ dx: s * dx
 const meeting = (top: readonly [number, number], r: number, h: number) =>
   `M ${top[0] - r} ${top[1]} a ${r} ${r} 0 0 1 ${2 * r} 0 v ${h} a ${r} ${r} 0 0 1 ${-2 * r} 0 v ${-h}`;
 
+// TODO:
+//  - terminal annotations
+//  - width dependent annotations
+const SMALL_MEETING = 64;
+const LARGE_MEETING = 128;
+
 const mkContinuedMeetings = (frags: DrawingFrag[], s: number) => {
   const mFrags: React.JSX.Element[] = [];
+  const aFrags: React.JSX.Element[] = [];
+
+  const departures = new Map<string, DrawingFrag & { kind: 'meeting' }>();
+  const arrivals = new Map<string, Pos>();
+
+  const r = 0.25 * s;
+
+  const addMeeting = (id: string, dep: DrawingFrag & { kind: 'meeting' }, i: number) => {
+    const arrival = arrivals.get(id);
+    if (arrival === undefined) { throw new Error("next trip started but arrival is undefined") }
+    const h = dep.dy * s;
+    const path = `M${dep.pos.x * s} ${dep.pos.y * s} a${r} ${r} 0 0 1 ${r} ${-r}`
+      + ` H${arrival.x * s + r} a${r} ${r} 0 0 1 ${r} ${r} v${h} a${r} ${r} 0 0 1 ${-r} ${r}`
+      + ` H${dep.pos.x * s + r} a${r} ${r} 0 0 1 ${-r} ${-r} v${-h} z`
+    mFrags.push(<path key={'m' + i} d={path} stroke="black" strokeWidth={1} fill="white" />);
+    const width = (arrival.x - dep.pos.x) * s;
+    const mMeta = xMeta.meetings[meetingId(dep)]!;
+    const text = width >= LARGE_MEETING ?
+      `${mMeta["departure-station"]} ${mMeta["trip-number"]} ${mMeta["arrival-station"]}` :
+      width >= SMALL_MEETING ? `${mMeta["departure-station"]} ${mMeta["trip-number"]}` :
+        mMeta["trip-number"];
+    const cls = width >= LARGE_MEETING ? 'm-large' : width >= SMALL_MEETING ? 'm-mid' : 'm-small';
+    aFrags.push(
+      <text key={`${i}mt`} className={cls} x={dep.pos.x * s + 7} y={(dep.pos.y + dep.dy / 2) * s + 6}>{text}</text>
+    );
+    if (width < SMALL_MEETING) {
+      aFrags.push(<text key={`${i}ma`} className={cls} x={dep.pos.x * s} y={dep.pos.y * s - 12} textAnchor="middle">
+        {mMeta["departure-station"]}
+      </text>);
+    }
+  }
+
   frags.forEach((frag, i) => matchByKind(frag, {
     "char-init": () => { },
     "char-line": () => { },
     meeting: m => {
-      const fill = xMeta.meetings[meetingId(m)] === undefined ? "red" : "blue"
-      const path = meeting([(m.pos.x + m.dx / 2) * s, m.pos.y * s], m.dx * s / 3, m.dy * s);
-      mFrags.push(<path key={'m' + i} d={path} stroke="black" strokeWidth={1} fill={fill} />);
+      const mMeta = xMeta.meetings[meetingId(m)];
+      const departure = departures.get(m.topChar);
+      if (mMeta !== undefined) {
+        if (departure !== undefined) { addMeeting(m.topChar, departure, i); }
+        departures.set(m.topChar, m);
+      } else {
+        arrivals.set(m.topChar, m.pos);
+      }
+      // const fill = xMeta.meetings[meetingId(m)] === undefined ? "white" : "lightblue"
+      // const path = meeting([(m.pos.x + m.dx / 2) * s, m.pos.y * s], m.dx * s / 3, m.dy * s);
+      // mFrags.push(<path key={'m' + i} d={path} stroke="black" strokeWidth={1} fill={fill} />);
     }
   }));
-  return mFrags;
+  departures.entries().forEach(([id, dep], j) => {
+    addMeeting(id, dep, frags.length + j);
+    const mMeta = xMeta.meetings[meetingId(dep)];
+    const arrival = arrivals.get(id);
+    if (arrival === undefined) { throw new Error("next trip started but arrival is undefined") }
+    if ((arrival.x - dep.pos.x) * s < LARGE_MEETING) {
+      aFrags.push(<text key={'a' + j} x={arrival.x * s + 2 * r + 5} y={(dep.pos.y + dep.dy / 2) * s + 6}>
+        {mMeta?.["arrival-station"]}
+      </text>);
+    }
+  });
+
+  return [...mFrags, ...aFrags];
 }
 
 const meetingId = (m: DrawingFrag & { kind: 'meeting' }) => `${xStory.layers[m.layer]?.layerDescription}_${m.topChar}`;
@@ -116,13 +174,18 @@ const annotateFrags = (oneDistance: number, frags: DrawingFrag[]) => {
 
   return <React.Fragment>
     {[...frags.flatMap<React.ReactNode>((f, i) => matchByKind(f, {
-      "char-init": ci =>
+      "char-init": ci => //[],
         [<text key={ci.char.id + '-'} x={ci.pos.x * s - 5} y={ci.pos.y * s} textAnchor="end">{ci.char.id}</text>],
-      "char-line": cl => [""],
-      meeting: m => [
+      "char-line": cl => [],
+      meeting: m => {
         // <text key={`${i}mr`} x={(m.pos.x + m.dx) * s + 5} y={(m.pos.y + m.dy / 2) * s + 6} textAnchor="start" filter="url(#solid)">{xMeta.meetings[meetingId(m)]!["trip-number"]}</text>,
-        // <text key={`${i}mt`} x={(m.pos.x + m.dx / 2) * s} y={(m.pos.y - m.dx / 3) * s - 3} textAnchor="middle">{xMeta.meetings[meetingId(m)]!["departure-station"]}</text>,
-      ],
+        // x={(m.pos.x + m.dx / 2) * s} y={(m.pos.y - m.dx / 3) * s - 3}
+        const mMeta = xMeta.meetings[meetingId(m)];
+        return mMeta === undefined ? [] :
+          [<text key={`${i}mt`} className="meeting_annotation" x={m.pos.x * s + 7} y={(m.pos.y + m.dy / 2) * s + 6}>
+            {`${mMeta["departure-station"]} ${mMeta["trip-number"]}` /* - ${mMeta["arrival-station"]} */}
+          </text>];
+      }
     }))]}
   </React.Fragment>
 }
