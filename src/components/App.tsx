@@ -7,6 +7,7 @@ import { defaultConfig, UserConfig } from "../model/Config";
 import { SettingsComponent } from "./SettingsComponent";
 import "./PKColors.css";
 import "./App.css";
+import { printMetrics } from "../model/Metrics";
 
 type Props = {};
 type State = { kind: 'ready' }
@@ -34,6 +35,7 @@ export const App = ({ }: Props) => {
   if (state.kind === 'ready') {
     return <SelectFile onSuccess={story => setState({ kind: 'processing', story })} />;
   } if (state.kind === 'show') {
+    printMetrics(state.story);
     return <React.Fragment>
       <SettingsComponent config={config} setConfig={setConfig} />
       <StorylineComponent story={state.story} blockHandling={config.blockHandling} layerStyle={config.layerWidth}

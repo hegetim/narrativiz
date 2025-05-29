@@ -13,7 +13,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    {/* <App /> */}
-    <FakeStoryComponent />
+    <App />
+    {/* <FakeStoryComponent /> */}
   </React.StrictMode>
 );

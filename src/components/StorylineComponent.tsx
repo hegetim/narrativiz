@@ -56,7 +56,7 @@ export const FakeStoryComponent = ({ }: {}) => {
         <feComposite in="SourceGraphic" operator="over" />
       </filter>
     </defs>
-    {annotateLayers(oneDistance, justified, y - 100, y + h + 200)}
+    {/* {annotateLayers(oneDistance, justified, y - 100, y + h + 200)} */}
     {drawFrags(oneDistance, justified)}
     {/* {annotateFrags(oneDistance, justified)} */}
   </svg>;
@@ -85,8 +85,8 @@ const drawFrags = (oneDistance: number, frags: DrawingFrag[]) => {
     {[...pathFrags.entries().map(([id, frags]) =>
       <path key={id} d={frags.join(" ")} stroke="black" strokeWidth={3} fill="none" />
     )]}
-    {/* {meetingFrags.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)} */}
-    {mkContinuedMeetings(frags, oneDistance)}
+    {meetingFrags.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)}
+    {/* {mkContinuedMeetings(frags, oneDistance)} */}
   </React.Fragment>
 }
 
@@ -168,27 +168,6 @@ const mkContinuedMeetings = (frags: DrawingFrag[], s: number) => {
 }
 
 const meetingId = (m: DrawingFrag & { kind: 'meeting' }) => `${xStory.layers[m.layer]?.layerDescription}_${m.topChar}`;
-
-const annotateFrags = (oneDistance: number, frags: DrawingFrag[]) => {
-  const s = oneDistance;
-
-  return <React.Fragment>
-    {[...frags.flatMap<React.ReactNode>((f, i) => matchByKind(f, {
-      "char-init": ci => //[],
-        [<text key={ci.char.id + '-'} x={ci.pos.x * s - 5} y={ci.pos.y * s} textAnchor="end">{ci.char.id}</text>],
-      "char-line": cl => [],
-      meeting: m => {
-        // <text key={`${i}mr`} x={(m.pos.x + m.dx) * s + 5} y={(m.pos.y + m.dy / 2) * s + 6} textAnchor="start" filter="url(#solid)">{xMeta.meetings[meetingId(m)]!["trip-number"]}</text>,
-        // x={(m.pos.x + m.dx / 2) * s} y={(m.pos.y - m.dx / 3) * s - 3}
-        const mMeta = xMeta.meetings[meetingId(m)];
-        return mMeta === undefined ? [] :
-          [<text key={`${i}mt`} className="meeting_annotation" x={m.pos.x * s + 7} y={(m.pos.y + m.dy / 2) * s + 6}>
-            {`${mMeta["departure-station"]} ${mMeta["trip-number"]}` /* - ${mMeta["arrival-station"]} */}
-          </text>];
-      }
-    }))]}
-  </React.Fragment>
-}
 
 const annotateLayers = (oneDistance: number, frags: DrawingFrag[], ymin: number, ymax: number) => {
   const s = oneDistance;

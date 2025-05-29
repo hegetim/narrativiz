@@ -30,6 +30,7 @@ const xMeta = xxMeta as {
     }
   }
 }
+const FAKE_STORIES = false;
 // TODO KILL THIS
 
 export type AlignCriterion = "sum-of-heights" | "least-squares" | "strict-center";
@@ -101,27 +102,29 @@ const continuedMeetings = (story: Storyline<WithRealizedGroups>) => {
   const res: QPConstraint[] = [];
   story.layers.forEach((layer, i) => {
     layer.groups.forEach((group, j) => {
-      const groupId = `l${i}g${j}`;
-      let prevId: string | undefined = undefined;
-      const groupSize = group.charactersOrdered.length;
-      let continued = groupSize > 1;
-      group.charactersOrdered.forEach(char => {
-        const tmp = lut.get(char)
-        if (tmp === undefined || tmp[1] !== groupSize) { continued = false; }
-        else {
-          prevId = tmp[0];
-          continued = continued && (prevId == lut.get(char)?.[0]);
+      if (group.kind === 'active') {
+        const groupId = `l${i}g${j}`;
+        let prevId: string | undefined = undefined;
+        const groupSize = group.charactersOrdered.length;
+        let continued = groupSize > 1;
+        group.charactersOrdered.forEach(char => {
+          const tmp = lut.get(char)
+          if (tmp === undefined || tmp[1] !== groupSize) { continued = false; }
+          else {
+            prevId = tmp[0];
+            continued = continued && (prevId == lut.get(char)?.[0]);
+          }
+          lut.set(char, [groupId, groupSize]);
+        });
+        if (continued) { res.push(qpVar(prevId!).equalTo(qpVar(groupId))); }
+        // only for fake storylines!!
+        else if (FAKE_STORIES && group.kind === 'active' && groupSize == 1) {
+          const meetingId = `${xStory.layers[i]?.layerDescription}_${group.charactersOrdered[0]}`;
+          const continued = xMeta.meetings[meetingId] === undefined;
+          if (continued && prevId !== undefined) { res.push(qpVar(prevId!).equalTo(qpVar(groupId))); }
         }
-        lut.set(char, [groupId, groupSize]);
-      });
-      if (continued) { res.push(qpVar(prevId!).equalTo(qpVar(groupId))); }
-      // only for fake storylines!!
-      else if (group.kind === 'active' && groupSize == 1) {
-        const meetingId = `${xStory.layers[i]?.layerDescription}_${group.charactersOrdered[0]}`;
-        const continued = xMeta.meetings[meetingId] === undefined;
-        if (continued && prevId !== undefined) { res.push(qpVar(prevId!).equalTo(qpVar(groupId))); }
+        // end only for fake storylines
       }
-      // end only for fake storylines
     });
   });
   return res;
