@@ -4,7 +4,7 @@
 
 import { Storyline, StorylineLayer, WithAlignedGroups, WithLayerDescriptions, WithRealizedGroups } from './Storyline';
 import { matchString, pushMMap, unimplemented, windows2 } from './Utils';
-import { fmtQP, QPConstraint, qpNum, QPTerm, qpVar } from './QPSupport';
+import { fmtQP, QPConstraint, qpNum, QPTerm, qpVar, uniqueIds } from './QPSupport';
 import highsLoader from 'highs';
 import _ from 'lodash';
 
@@ -33,7 +33,7 @@ const xMeta = xxMeta as {
 const FAKE_STORIES = false;
 // TODO KILL THIS
 
-export type AlignCriterion = "sum-of-heights" | "least-squares" | "strict-center";
+export type AlignCriterion = "sum-of-heights" | "least-squares" | "strict-center" | "wiggle-count";
 
 type InGroup = { groupId: string, offset: number };
 type CharLines = Map<string, InGroup[]>;
@@ -74,7 +74,15 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
       const [zConstraints, obj] = mkSumOfHeights(characters);
       return solve(r, fmtQP([...yConstraints, ...zConstraints, ...cConstraints], obj, 'min'));
     },
-    "strict-center": () => alignCenter(r)
+    "strict-center": () => alignCenter(r),
+    "wiggle-count": () => {
+      const m = bigM(r);
+      const [zConstraints, obj] = mkWiggleCount(characters, m);
+      const yVars = uniqueIds(yConstraints.map(c => c.left));
+      const zVars = _.range(0, zConstraints.length / 2).map(i => `z${i}`);
+      const bounds = yVars.map(id => ({ lb: 0, id, ub: m }));
+      return solve(r, fmtQP([...yConstraints, ...zConstraints, ...cConstraints], obj, 'min', bounds, yVars, zVars));
+    }
   });
 }
 
@@ -138,7 +146,7 @@ const solve = async <S extends {}, L extends {}, G extends {}>(
   const highs = await highsLoader();
   // const highs = await highsLoader({ locateFile: file => `https://lovasoa.github.io/highs-js/${file}` });
   // const instance = fmtQP(yc, optSqr(cl), 'min');
-  // console.log(instance);
+  console.log(instance);
   const solution = highs.solve(instance);
   console.log(solution);
   if (solution.Status === 'Optimal') {
@@ -171,4 +179,20 @@ const alignCenter = async <S extends {}, L extends {}, G extends {}>(
     }
   }
   return { ...r, layers: r.layers.map(alignGroups) };
+}
+
+const bigM = (story: Storyline) =>
+  story.layers.flatMap(l => l.groups.map(g => g.characters.length)).reduce((a, b) => a + b)
+
+const mkWiggleCount = (cl: CharLines, m: number): [QPConstraint[], QPTerm] => {
+  const constraints = [...cl.values()
+    .flatMap(line => windows2(line))
+    .flatMap(([p, q], i) => {
+      const a = qpVar(p.groupId).plus(qpNum(p.offset));
+      const b = qpVar(q.groupId).plus(qpNum(q.offset));
+      const z = qpVar(`z${i}`);
+      return [a.lessThanOrEqual(b.plus(z.scale(m))), a.greaterThanOrEqual(b.minus(z.scale(m)))];
+    })];
+  const opt = _.range(0, constraints.length / 2).reduce((sum, i) => sum.plus(qpVar(`z${i}`)), qpNum(0));
+  return [constraints, opt];
 }

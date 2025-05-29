@@ -204,14 +204,30 @@ const fmtC = (c: QPConstraint) => {
   return `${stringify(term)} ${c.kind} ${c.right - num}`;
 }
 
-const uniqueIds = (ts: QPTerm[]) => _.uniq(ts.flatMap(t => matchByKind(t, {
+export const uniqueIds = (ts: QPTerm[]): string[] => _.uniq(ts.flatMap(t => matchByKind(t, {
   linear: l => l.varIds,
   quadratic: q => [...q.varIds, ...q.lin.varIds],
 })));
 
-export const fmtQP = (cs: QPConstraint[], obj: QPTerm, mode: 'max' | 'min') =>
-  `${mode === 'max' ? "Maximize" : "Minimize"}
+export type Bound = { lb: number, id: string, ub: number };
+
+export const fmtQP = (
+  cs: QPConstraint[],
+  obj: QPTerm,
+  mode: 'max' | 'min',
+  bounds: Bound[] = [],
+  general: string[] = [],
+  binary: string[] = [],
+) => {
+  const base = `${mode === 'max' ? "Maximize" : "Minimize"}
 obj: ${stringify(obj)}
 Subject To
-${cs.map(stringify).join("\n")}
-End`;
+${cs.map(stringify).join("\n")}`
+  const _bounds = bounds.map(({ lb, id, ub }) => `${lb} <= ${id} <= ${ub}`).join("\n");
+  return base
+    + (_.isEmpty(bounds) ? "" : `\nBounds\n ${_bounds}`)
+    + (_.isEmpty(general) ? "" : `\nGeneral\n${general.join(" ")}`)
+    + (_.isEmpty(binary) ? "" : `\nBinary\n${binary.join(" ")}`)
+    + "\nEnd";
+}
+

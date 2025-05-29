@@ -22,7 +22,7 @@ export const SettingsComponent = ({ config, setConfig }: Props) => {
   return <div {...cls("settings-container")}>
     <div {...cls("settings-label")}>alignment</div>
     <SelectButton<AlignCriterion> value={config.alignmentMode}
-      labels={{ "strict-center": "center", "sum-of-heights": "wiggle-height", "least-squares": "square-height" }}
+      labels={{ "strict-center": "center", "sum-of-heights": "wiggle-height", "least-squares": "square-height", "wiggle-count": "wiggle-count" }}
       setValue={mode => commit(c => c.alignmentMode = mode)} />
 
     <div {...cls("settings-label")}>block handling</div>
