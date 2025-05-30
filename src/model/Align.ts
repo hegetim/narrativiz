@@ -11,6 +11,7 @@ import _ from 'lodash';
 // TODO KILL THIS
 import xxStory from "../static/story.json";
 import xxMeta from "../static/meta.json";
+import xxSol from "../static/sol.json";
 
 const xStory = xxStory as Storyline<WithAlignedGroups, WithLayerDescriptions>;
 const xMeta = xxMeta as {
@@ -29,7 +30,8 @@ const xMeta = xxMeta as {
       "trip-number": string,
     }
   }
-}
+};
+const xSol = xxSol as { [index: string]: number };
 const FAKE_STORIES = false;
 // TODO KILL THIS
 
@@ -81,7 +83,19 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
       const yVars = uniqueIds(yConstraints.map(c => c.left));
       const zVars = _.range(0, zConstraints.length / 2).map(i => `z${i}`);
       const bounds = yVars.map(id => ({ lb: 0, id, ub: m }));
-      return solve(r, fmtQP([...yConstraints, ...zConstraints, ...cConstraints], obj, 'min', bounds, yVars, zVars));
+      const yMax = qpVar("ymax")
+      const yMConstraints = yVars.map(yv => yMax.greaterThanOrEqual(qpVar(yv)));
+      const solution = fmtQP(
+        [...yConstraints, ...zConstraints, ...cConstraints, ...yMConstraints],
+        obj.plus(yMax.scale(1 / m)),
+        'min',
+        bounds,
+        yVars,
+        zVars
+      );
+      console.log(solution);
+      return solve(r, "");
+      // return fakeSolve(r, "");
     }
   });
 }
@@ -162,6 +176,21 @@ const solve = async <S extends {}, L extends {}, G extends {}>(
     };
   } else return undefined;
 }
+
+const fakeSolve = async <S extends {}, L extends {}, G extends {}>(
+  r: Storyline<WithRealizedGroups & S, L, G>,
+  instance: string
+): Promise<Storyline<WithAlignedGroups & S, L, G> | undefined> =>
+  Promise.resolve({
+    ...r,
+    layers: r.layers.map((layer, i) => ({
+      ...layer,
+      groups: layer.groups.map((group, j) => ({
+        ...group,
+        atY: xSol[`l${i}g${j}`]!,
+      })),
+    })),
+  });
 
 const alignCenter = async <S extends {}, L extends {}, G extends {}>(
   r: Storyline<WithRealizedGroups & S, L, G>
