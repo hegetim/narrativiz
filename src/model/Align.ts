@@ -85,7 +85,7 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
       const bounds = yVars.map(id => ({ lb: 0, id, ub: m }));
       const yMax = qpVar("ymax")
       const yMConstraints = yVars.map(yv => yMax.greaterThanOrEqual(qpVar(yv)));
-      const solution = fmtQP(
+      const problem = fmtQP(
         [...yConstraints, ...zConstraints, ...cConstraints, ...yMConstraints],
         obj.plus(yMax.scale(1 / m)),
         'min',
@@ -93,9 +93,9 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
         yVars,
         zVars
       );
-      console.log(solution);
-      return solve(r, "");
-      // return fakeSolve(r, "");
+      console.log(problem);
+      // return solve(r, "");
+      return fakeSolve(r, "");
     }
   });
 }

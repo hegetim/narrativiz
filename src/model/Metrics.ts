@@ -31,14 +31,16 @@ const toCharLines = (story: Storyline<WithAlignedGroups>): CharLines => {
 }
 
 const metrics = (lines: CharLines) => {
-  let [wc, lwh, qwh] = [0, 0, 0];
+  let [wc, lwh, qwh, ymin, ymax] = [0, 0, 0, Infinity, -Infinity];
   for (let igs of lines.values()) {
     for (let [a, b] of windows2(igs)) {
       const wh = Math.abs(a.y - b.y);
       if (wh > eps) { wc += 1; }
       lwh += wh;
       qwh += wh * wh;
+      ymin = Math.min(ymin, a.y, b.y);
+      ymax = Math.max(ymax, a.y, b.y);
     }
   }
-  return { wc, lwh, qwh };
+  return { wc, lwh, qwh, th: ymax - ymin };
 }
