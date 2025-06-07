@@ -37,7 +37,7 @@ type Props = {
 };
 
 export const StorylineComponent = ({ story, oneDistance, layerStyle, blockHandling }: Props) => {
-  console.log(JSON.stringify(story));
+  // console.log(JSON.stringify(story));
   const justified = justifyLayers(story, { layerStyle, blockHandling });
   const [x, y, w, h] = bbox(justified.flatMap(corners), oneDistance);
   return <div className="storyline-container">

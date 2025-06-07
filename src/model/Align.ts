@@ -71,7 +71,11 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
   const cConstraints = alignContinuedMeetings ? continuedMeetings(r) : [];
 
   return matchString(mode, {
-    "least-squares": () => solve(r, fmtQP([...yConstraints, ...cConstraints], optSqr(characters), 'min')),
+    "least-squares": () => {
+      const [zConstraints] = mkSumOfHeights(characters);
+      const obj = `[ ${_.range(0, zConstraints.length / 2).map(i => `z${i} ^ 2`).reduce((a, b) => `${a} + ${b}`)} ] / 2`
+      return solve(r, fmtQP([...yConstraints, ...zConstraints, ...cConstraints], obj, 'min'))
+    },
     "sum-of-heights": () => {
       const [zConstraints, obj] = mkSumOfHeights(characters);
       return solve(r, fmtQP([...yConstraints, ...zConstraints, ...cConstraints], obj, 'min'));
@@ -94,17 +98,20 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
         zVars
       );
       console.log(problem);
-      // return solve(r, "");
-      return fakeSolve(r, "");
+      return solve(r, problem);
+      // return fakeSolve(r);
     }
   });
 }
 
-const optSqr = (cl: CharLines) => cl.values()
-  .flatMap(line => windows2(line).map(([p, q]) =>
-    qpVar(p.groupId).plus(qpNum(p.offset)).minus(qpVar(q.groupId).plus(qpNum(q.offset))).squared()
-  ))
-  .reduce((a, b) => a.plus(b));
+// const mkSqr = (cl: CharLines) => {
+//   const constraints = [...cl.values().flatMap(line => windows2(line)).map(([p, q], i) => {
+//     const a = qpVar(p.groupId).plus(qpNum(p.offset));
+//     const b = qpVar(q.groupId).plus(qpNum(q.offset));
+//     return qpVar(`z${i}`).equalTo(b.minus(a));
+//   })];
+//   return [constraints, constraints.map((_c, i) => qpVar(`z${i}`).squared()).reduce((a, b) => a.plus(b))] as const;
+// }
 
 const mkSumOfHeights = (cl: CharLines): [QPConstraint[], QPTerm] => {
   const constraints = [...cl.values()
@@ -179,7 +186,6 @@ const solve = async <S extends {}, L extends {}, G extends {}>(
 
 const fakeSolve = async <S extends {}, L extends {}, G extends {}>(
   r: Storyline<WithRealizedGroups & S, L, G>,
-  instance: string
 ): Promise<Storyline<WithAlignedGroups & S, L, G> | undefined> =>
   Promise.resolve({
     ...r,

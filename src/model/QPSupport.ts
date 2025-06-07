@@ -158,12 +158,12 @@ const isZero = (t: QPTerm): boolean => matchByKind(t, {
 
 // REMEMBER: j <= i
 
-export const stringify = (t: QPTerm | QPConstraint): string => matchByKind(t, {
+export const stringify = (t: QPTerm | QPConstraint | string): string => typeof t === 'string' ? t : matchByKind(t, {
   linear: l => fmtL(l),
   quadratic: q => fmtQ(q),
   "<=": c => fmtC(c),
   "=": c => fmtC(c),
-})
+});
 
 const fmtL = (l: QPLinear) => _.zip(l.varIds, l.a).reduce((s, [id, m]) => {
   if (m === 0 || m === undefined) { return s; }
@@ -213,7 +213,7 @@ export type Bound = { lb: number, id: string, ub: number };
 
 export const fmtQP = (
   cs: QPConstraint[],
-  obj: QPTerm,
+  obj: QPTerm | string,
   mode: 'max' | 'min',
   bounds: Bound[] = [],
   general: string[] = [],
