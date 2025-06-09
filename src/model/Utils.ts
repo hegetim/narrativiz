@@ -37,6 +37,8 @@ export const cls = (...names: ClassNames) => {
   return { className: joined };
 }
 
+export const assertNever = (_x: never): never => unreachable();
+
 export const assertThat = (subject: boolean, msg: string) => {
   if (!subject) { throw new Error(msg); }
 }

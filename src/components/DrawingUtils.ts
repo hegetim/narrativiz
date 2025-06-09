@@ -1,8 +1,10 @@
 import { SLine } from "../model/Justify";
 
+const eps = 1e-8;
+
 export const sPathFrag = ({ dx, dy, bs, offset }: SLine) => {
-  if (dx === 0) { console.warn(`empty s-line: dx=${dx} dy=${dy} bs=${bs} offset=${offset}`); return ""; }
-  if (dy === 0) { return `h ${dx}`; }
+  if (dx < eps) { console.warn(`empty s-line: dx=${dx} dy=${dy} bs=${bs} offset=${offset}`); return ""; }
+  if (Math.abs(dy) < eps) { return `h ${dx}`; }
   // console.info(`s-path frag: w=${dx} h=${dy} bs=${bs}@${offset} (=${offset * bs})`)
   const d = (dy * dy + dx * dx) / (2 * Math.abs(dy));
   const r1 = d / 2 - Math.sign(dy) * (offset - 0.5) * bs;

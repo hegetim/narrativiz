@@ -1,13 +1,17 @@
+/* SPDX-FileCopyrightText: 2024 Tim Hegemann <hegemann@informatik.uni-wuerzburg.de>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import React, { useEffect, useState } from "react";
 import { align } from "../model/Align";
 import { Storyline, WithAlignedGroups, WithLayerDescriptions, WithRealizedGroups } from "../model/Storyline";
 import { StorylineComponent } from "./StorylineComponent";
-import { SelectFile } from "./StorylineFromFile";
+import { masterFiles, SelectFile } from "./StorylineFromFile";
 import { defaultConfig, UserConfig } from "../model/Config";
 import { SettingsComponent } from "./SettingsComponent";
+import { printMetrics } from "../model/Metrics";
 import "./PKColors.css";
 import "./App.css";
-import { printMetrics } from "../model/Metrics";
 
 type Props = {};
 type State = { kind: 'ready' }
@@ -33,7 +37,7 @@ export const App = ({ }: Props) => {
   }, [config.alignmentMode, config.gapRatio, config.alignContinuedMeetings]);
 
   if (state.kind === 'ready') {
-    return <SelectFile onSuccess={story => setState({ kind: 'processing', story })} />;
+    return <SelectFile handler={masterFiles(story => setState({ kind: 'processing', story }))} />;
   } if (state.kind === 'show') {
     printMetrics(state.story);
     return <React.Fragment>

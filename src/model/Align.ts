@@ -11,7 +11,8 @@ import _ from 'lodash';
 // TODO KILL THIS
 import xxStory from "../static/story.json";
 import xxMeta from "../static/meta.json";
-import xxSol from "../static/sol.json";
+import { OneShotFile } from '../components/OneShot';
+// import xxSol from "../static/sol.json";
 
 const xStory = xxStory as Storyline<WithAlignedGroups, WithLayerDescriptions>;
 const xMeta = xxMeta as {
@@ -31,7 +32,7 @@ const xMeta = xxMeta as {
     }
   }
 };
-const xSol = xxSol as { [index: string]: number };
+// const xSol = xxSol as { [index: string]: number };
 const FAKE_STORIES = false;
 // TODO KILL THIS
 
@@ -46,27 +47,7 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
   gapRatio: number,
   alignContinuedMeetings: boolean,
 ): Promise<Storyline<WithAlignedGroups & G, L, S> | undefined> => {
-  const characters: CharLines = new Map();
-  const yConstraints: QPConstraint[] = [];
-
-  r.layers.forEach((layer, i) => {
-    let prevGroup: { id: string, size: number } | undefined = undefined;
-    layer.groups.forEach((group, j) => {
-      if (group.charactersOrdered.length === 0) {
-        throw new Error(`layer ${layer} has an empty group`);
-      } else {
-        const groupId = `l${i}g${j}`;
-        group.charactersOrdered.forEach((cId, offset) => pushMMap(characters, cId, { groupId, offset }));
-        if (prevGroup) {
-          yConstraints.push(qpVar(prevGroup.id)
-            .plus(qpNum(prevGroup.size - 1 + gapRatio))
-            .lessThanOrEqual(qpVar(groupId))
-          );
-        }
-        prevGroup = { id: groupId, size: group.charactersOrdered.length };
-      }
-    });
-  });
+  const { characters, yConstraints } = mkClY(r, gapRatio);
 
   const cConstraints = alignContinuedMeetings ? continuedMeetings(r) : [];
 
@@ -102,6 +83,37 @@ export const align = async <S extends {}, L extends {}, G extends {}>(
       // return fakeSolve(r);
     }
   });
+}
+
+export const fakeAlign = async <S extends {}, L extends {}, G extends {}>(
+  r: Storyline<WithRealizedGroups & G, L, S>,
+  oneShot: OneShotFile,
+): Promise<Storyline<WithAlignedGroups & G, L, S> | undefined> => fakeSolve(r, oneShot);
+
+const mkClY = (r: Storyline<WithRealizedGroups>, gapRatio: number) => {
+  const characters: CharLines = new Map();
+  const yConstraints: QPConstraint[] = [];
+
+  r.layers.forEach((layer, i) => {
+    let prevGroup: { id: string, size: number } | undefined = undefined;
+    layer.groups.forEach((group, j) => {
+      if (group.charactersOrdered.length === 0) {
+        throw new Error(`layer ${layer} has an empty group`);
+      } else {
+        const groupId = `l${i}g${j}`;
+        group.charactersOrdered.forEach((cId, offset) => pushMMap(characters, cId, { groupId, offset }));
+        if (prevGroup) {
+          yConstraints.push(qpVar(prevGroup.id)
+            .plus(qpNum(prevGroup.size - 1 + gapRatio))
+            .lessThanOrEqual(qpVar(groupId))
+          );
+        }
+        prevGroup = { id: groupId, size: group.charactersOrdered.length };
+      }
+    });
+  });
+
+  return { characters, yConstraints };
 }
 
 // const mkSqr = (cl: CharLines) => {
@@ -186,6 +198,7 @@ const solve = async <S extends {}, L extends {}, G extends {}>(
 
 const fakeSolve = async <S extends {}, L extends {}, G extends {}>(
   r: Storyline<WithRealizedGroups & S, L, G>,
+  oneShot: OneShotFile,
 ): Promise<Storyline<WithAlignedGroups & S, L, G> | undefined> =>
   Promise.resolve({
     ...r,
@@ -193,7 +206,7 @@ const fakeSolve = async <S extends {}, L extends {}, G extends {}>(
       ...layer,
       groups: layer.groups.map((group, j) => ({
         ...group,
-        atY: xSol[`l${i}g${j}`]!,
+        atY: oneShot.solution[`l${i}g${j}`] ?? 0,
       })),
     })),
   });

@@ -39,6 +39,7 @@ type Props = {
 export const StorylineComponent = ({ story, oneDistance, layerStyle, blockHandling }: Props) => {
   // console.log(JSON.stringify(story));
   const justified = justifyLayers(story, { layerStyle, blockHandling });
+  console.log(`number of meeting frags: ${justified.filter(j => j.kind === 'meeting').length}`)
   const [x, y, w, h] = bbox(justified.flatMap(corners), oneDistance);
   return <div className="storyline-container">
     <svg viewBox={`${x - 10} ${y - 10} ${w + 20} ${h + 20}`} width={w + 30}>{drawFrags(oneDistance, justified)}</svg>

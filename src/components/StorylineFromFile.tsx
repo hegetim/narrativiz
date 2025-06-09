@@ -8,10 +8,10 @@ import { master2storyline, MasterStoryline, sgbFile } from "../io/sgb";
 import { formatError } from "parsimmon";
 import './StorylineFromFile.css';
 
-type Props = { onSuccess: (story: MasterStoryline) => void };
+type Props = { handler: (file: File) => Promise<{ kind: 'pass' } | { kind: 'error', msg: string }> };
 type State = { kind: 'calm' | 'active' } | { kind: 'error', msg: string };
 
-export const SelectFile = ({ onSuccess }: Props) => {
+export const SelectFile = ({ handler }: Props) => {
   const hiddenInput = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>({ kind: 'calm' });
 
@@ -19,10 +19,10 @@ export const SelectFile = ({ onSuccess }: Props) => {
     const checked = await checkFiles(files);
     matchByKind(checked, {
       error: err => setState(err),
-      pass: pass => matchByKind(parseMaster(pass.str), {
+      pass: pass => handler(pass.file).then(res => matchByKind(res, {
         error: err => setState(err),
-        pass: pass => onSuccess(pass.story),
-      })
+        pass: () => { }, // do nothing
+      })),
     });
   };
 
@@ -52,10 +52,18 @@ export const SelectFile = ({ onSuccess }: Props) => {
 const checkFiles = async (files: FileList | null) => {
   if (!files?.length) { return { kind: 'error' as const, msg: "something went wrong" }; }
   else if (files.length !== 1) { return { kind: 'error' as const, msg: "please upload only one file at a time" }; }
-  else { return files[0]!.text().then(str => ({ kind: 'pass' as const, str })); }
+  else { return { kind: 'pass' as const, file: files[0]! } };
 }
 
-const parseMaster = (raw: string) => {
+export const masterFiles = (onSuccess: (story: MasterStoryline) => void): Props['handler'] =>
+  async (file: File) => {
+    const str = await file.text();
+    const result = parseMaster(str);
+    if (result.kind === 'pass') { onSuccess(result.story) };
+    return result;
+  }
+
+export const parseMaster = (raw: string) => {
   const parsed = sgbFile('loose', 'master').parse(raw);
   if (!parsed.status) {
     return { kind: 'error' as const, msg: `Could not parse masster file: ${formatError(raw, parsed)}` };
