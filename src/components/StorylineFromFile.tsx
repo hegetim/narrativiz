@@ -66,7 +66,7 @@ export const masterFiles = (onSuccess: (story: MasterStoryline) => void): Props[
 export const parseMaster = (raw: string) => {
   const parsed = sgbFile('loose', 'master').parse(raw);
   if (!parsed.status) {
-    return { kind: 'error' as const, msg: `Could not parse masster file: ${formatError(raw, parsed)}` };
+    return { kind: 'error' as const, msg: `Could not parse master file: ${formatError(raw, parsed)}` };
   }
   const story = master2storyline(parsed.value);
   console.log(story);

@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { Storyline, WithAlignedGroups } from "./Storyline";
-import { assertThat, ifDefined, matchByKind, matchString, windows2 } from "./Utils";
+import { assertNever, assertThat, ifDefined, matchByKind, matchString, windows2 } from "./Utils";
+import { blocks2SLine } from "../components/DrawingUtils";
 
 const minRadius = 1;
 const meetingWidth = 0.5;
@@ -46,9 +47,9 @@ export const justifyLayers = (s: Storyline<WithAlignedGroups>, { layerStyle, blo
   if (layerStyle === 'uniform') {
     const layerWidth = Math.max(...otherLayers.flatMap(mkWidth));
     return mkFragsUniform(s, [firstLayer, ...otherLayers], layerWidth);
-  } else {
+  } else if (layerStyle === 'condensed') {
     return mkFragsCondensed(s, [firstLayer, ...otherLayers]);
-  }
+  } else { return assertNever(layerStyle); }
 }
 
 const slope2slope = (x: number): -1 | 0 | 1 => Math.abs(x) > eps ? (x > 0 ? 1 : -1) : 0;
@@ -142,8 +143,7 @@ const mkFragsUniform = (story: Storyline<WithAlignedGroups>, layers: Stage2A[][]
       kind: "char-line",
       char: { id: cl.char, inMeeting: cl.inMeeting },
       pos: { x: i * width, y: cl.y },
-      // sLine: { dx: cl.inMeeting ? layerWidth - meetingWidth : layerWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
-      sLine: { dx: width - meetingWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
+      sLine: blocks2SLine(width - meetingWidth, cl.dy, cl.bs, cl.offset),
       dx: width,
     }),
   }))),
@@ -174,7 +174,7 @@ const mkFragsCondensed = (story: Storyline<WithAlignedGroups>, layers: Stage2A[]
         kind: "char-line",
         char: { id: cl.char, inMeeting: cl.inMeeting },
         pos: { x, y: cl.y },
-        sLine: { dx: width - meetingWidth, dy: cl.dy, bs: cl.bs, offset: cl.offset },
+        sLine: blocks2SLine(width - meetingWidth, cl.dy, cl.bs, cl.offset),
         dx: width,
       }),
     })));
@@ -213,7 +213,7 @@ type Stage2A = Stage1A & ({ kind: 'char-init' } | { kind: 'char-line', dy: numbe
 
 export type Pos = { x: number, y: number };
 export type CharState = { id: string, inMeeting: boolean }
-export type SLine = { dx: number, dy: number, bs: number, offset: number }
+export type SLine = { dx: number, dy: number, r1: number, r2: number }
 
 export type DrawingFrag = { kind: 'char-init', char: CharState, pos: Pos, dx: number }
   | { kind: 'char-line', char: CharState, pos: Pos, sLine: SLine, dx: number }

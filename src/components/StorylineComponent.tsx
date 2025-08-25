@@ -5,8 +5,9 @@
 import React from "react";
 import { matchByKind, pushMMap, unimplemented, windows2 } from "../model/Utils";
 import { corners, DrawingFrag, JustifyConfig, justifyLayers, Pos, SLine } from "../model/Justify";
+import { justifyLayers as justifyLP } from "../model/JustifyLP";
 import { Storyline, WithAlignedGroups, WithLayerDescriptions } from "../model/Storyline";
-import { sPathFrag } from "./DrawingUtils";
+import { scaleSLine, sLine2svg } from "./DrawingUtils";
 import xxStory from "../static/story.json";
 import xxMeta from "../static/meta.json";
 
@@ -39,6 +40,7 @@ type Props = {
 export const StorylineComponent = ({ story, oneDistance, layerStyle, blockHandling }: Props) => {
   // console.log(JSON.stringify(story));
   const justified = justifyLayers(story, { layerStyle, blockHandling });
+  justifyLP(story, 'uniform');
   console.log(`number of meeting frags: ${justified.filter(j => j.kind === 'meeting').length}`)
   const [x, y, w, h] = bbox(justified.flatMap(corners), oneDistance);
   return <div className="storyline-container">
@@ -78,7 +80,7 @@ const drawFrags = (oneDistance: number, frags: DrawingFrag[]) => {
 
   frags.forEach(frag => matchByKind(frag, {
     "char-init": ci => pushMMap(pathFrags, ci.char.id, `M ${ci.pos.x * s} ${ci.pos.y * s} h ${ci.dx * s}`),
-    "char-line": cl => pushMMap(pathFrags, cl.char.id, sPathFrag(scale(cl.sLine, s)), `h ${(cl.dx - cl.sLine.dx) * s}`),
+    "char-line": cl => pushMMap(pathFrags, cl.char.id, sLine2svg(scaleSLine(cl.sLine, s)), `h ${(cl.dx - cl.sLine.dx) * s}`),
     meeting: m => meetingFrags.push(meeting([(m.pos.x + m.dx / 2) * s, m.pos.y * s], m.dx * s / 3, m.dy * s)),
   }));
 
@@ -90,8 +92,6 @@ const drawFrags = (oneDistance: number, frags: DrawingFrag[]) => {
     {/* {mkContinuedMeetings(frags, oneDistance)} */}
   </React.Fragment>
 }
-
-const scale = ({ dx, dy, bs, offset }: SLine, s: number): SLine => ({ dx: s * dx, dy: s * dy, bs: s * bs, offset });
 
 const meeting = (top: readonly [number, number], r: number, h: number) =>
   `M ${top[0] - r} ${top[1]} a ${r} ${r} 0 0 1 ${2 * r} 0 v ${h} a ${r} ${r} 0 0 1 ${-2 * r} 0 v ${-h}`;

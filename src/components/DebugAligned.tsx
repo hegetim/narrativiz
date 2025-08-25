@@ -5,8 +5,8 @@
 import React from "react";
 import { Storyline, WithAlignedGroups } from "../model/Storyline";
 import { matchByKind, pushMMap } from "../model/Utils";
-import { sPathFrag } from "./DrawingUtils";
 import { corners, DrawingFrag, justifyLayers, SLine } from "../model/Justify";
+import { blocks2SLine, scaleSLine, sLine2svg } from "./DrawingUtils";
 
 const layerXDist = 100;
 const layerWidth = 20;
@@ -52,7 +52,7 @@ export const DebugAlignedComponent = ({ story }: Props) => {
             pushMMap(frags, char, `H ${x + layerWidth}`);
           } else {
             const [jointBlockSize, jointOffset] = joinBlocks(prev.blockSize, prev.offset, blockSize, offset);
-            pushMMap(frags, char, sPathFrag({ dx: layerXDist, dy: y - prev.at[1], bs: jointBlockSize, offset: jointOffset }));
+            pushMMap(frags, char, sLine2svg(blocks2SLine(layerXDist, y - prev.at[1], jointBlockSize, jointOffset)));
             pushMMap(frags, char, `h ${layerWidth}`);
           }
         } else {
@@ -91,7 +91,7 @@ const drawFrags = (frags: DrawingFrag[]) => {
 
   frags.forEach(frag => matchByKind(frag, {
     "char-init": ci => pushMMap(pathFrags, ci.char.id, `M ${ci.pos.x * s} ${ci.pos.y * s} h ${ci.dx * s}`),
-    "char-line": cl => pushMMap(pathFrags, cl.char.id, sPathFrag(scale(cl.sLine, s)), `h ${(cl.dx - cl.sLine.dx) * s}`),
+    "char-line": cl => pushMMap(pathFrags, cl.char.id, sLine2svg(scaleSLine(cl.sLine, s)), `h ${(cl.dx - cl.sLine.dx) * s}`),
     meeting: m => meetingFrags.push(meeting([(m.pos.x + m.dx / 2) * s, m.pos.y * s], m.dx * s / 3, m.dy * s)),
   }));
 
@@ -102,8 +102,6 @@ const drawFrags = (frags: DrawingFrag[]) => {
     {meetingFrags.map((d, i) => <path key={'m' + i} d={d} stroke="black" strokeWidth={1} fill="white" />)}
   </React.Fragment>
 }
-
-const scale = ({ dx, dy, bs, offset }: SLine, s: number): SLine => ({ dx: s * dx, dy: s * dy, bs: s * bs, offset });
 
 const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: number) => {
   // console.info(`join blocks: l=${sizeL} @ ${offsetL}  r=${sizeR} @ ${offsetR}`)
