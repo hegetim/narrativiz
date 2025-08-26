@@ -1,3 +1,7 @@
+/* SPDX-FileCopyrightText: 2025 Tim Hegemann <hegemann@informatik.uni-wuerzburg.de>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import _ from "lodash";
 import { Storyline, StorylineLayer, WithAlignedGroups } from "./Storyline";
 import { assertNever, assertThat, ifDefined, matchByKind, matchString, windows2 } from "./Utils";

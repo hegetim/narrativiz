@@ -1,3 +1,7 @@
+/* SPDX-FileCopyrightText: 2025 Tim Hegemann <hegemann@informatik.uni-wuerzburg.de>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
