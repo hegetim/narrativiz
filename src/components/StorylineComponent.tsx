@@ -5,7 +5,6 @@
 import React from "react";
 import { matchByKind, pushMMap, unimplemented, windows2 } from "../model/Utils";
 import { corners, DrawingFrag, JustifyConfig, justifyLayers, Pos, SLine } from "../model/Justify";
-import { justifyLayers as justifyLP } from "../model/JustifyLP";
 import { Storyline, WithAlignedGroups, WithLayerDescriptions } from "../model/Storyline";
 import { scaleSLine, sLine2svg } from "./DrawingUtils";
 import xxStory from "../static/story.json";
@@ -31,39 +30,36 @@ const xMeta = xxMeta as {
 }
 
 type Props = {
-  story: Storyline<WithAlignedGroups, WithLayerDescriptions>,
+  fragments: DrawingFrag[],
   oneDistance: number,
-  layerStyle: JustifyConfig['layerStyle'],
-  blockHandling: JustifyConfig['blockHandling']
 };
 
-export const StorylineComponent = ({ story, oneDistance, layerStyle, blockHandling }: Props) => {
+export const StorylineComponent = ({ fragments, oneDistance }: Props) => {
   // console.log(JSON.stringify(story));
-  const justified = justifyLayers(story, { layerStyle, blockHandling });
-  justifyLP(story, 'uniform');
-  console.log(`number of meeting frags: ${justified.filter(j => j.kind === 'meeting').length}`)
-  const [x, y, w, h] = bbox(justified.flatMap(corners), oneDistance);
+  // const justified = justifyLayers(story, { layerStyle, blockHandling });
+  // console.log(`number of meeting frags: ${justified.filter(j => j.kind === 'meeting').length}`)
+  const [x, y, w, h] = bbox(fragments.flatMap(corners), oneDistance);
   return <div className="storyline-container">
-    <svg viewBox={`${x - 10} ${y - 10} ${w + 20} ${h + 20}`} width={w + 30}>{drawFrags(oneDistance, justified)}</svg>
+    <svg viewBox={`${x - 10} ${y - 10} ${w + 20} ${h + 20}`} width={w + 30}>{drawFrags(oneDistance, fragments)}</svg>
   </div>;
 }
 
-export const FakeStoryComponent = ({ }: {}) => {
-  const oneDistance = 40
-  const justified = justifyLayers(xStory, { layerStyle: 'condensed', blockHandling: 'continuous' });
-  const [x, y, w, h] = bbox(justified.flatMap(corners), oneDistance);
-  return <svg viewBox={`${x - 100} ${y - 100} ${w + 300} ${h + 300}`} width={w + 200}>
-    <defs>
-      <filter id="solid">
-        <feFlood floodColor="white" result="bg" />
-        <feComposite in="SourceGraphic" operator="over" />
-      </filter>
-    </defs>
-    {/* {annotateLayers(oneDistance, justified, y - 100, y + h + 200)} */}
-    {drawFrags(oneDistance, justified)}
-    {/* {annotateFrags(oneDistance, justified)} */}
-  </svg>;
-}
+// export const FakeStoryComponent = ({ }: {}) => {
+//   const oneDistance = 40
+//   const justified = justifyLayers(xStory, { layerStyle: 'condensed', blockHandling: 'continuous' });
+//   const [x, y, w, h] = bbox(justified.flatMap(corners), oneDistance);
+//   return <svg viewBox={`${x - 100} ${y - 100} ${w + 300} ${h + 300}`} width={w + 200}>
+//     <defs>
+//       <filter id="solid">
+//         <feFlood floodColor="white" result="bg" />
+//         <feComposite in="SourceGraphic" operator="over" />
+//       </filter>
+//     </defs>
+//     {/* {annotateLayers(oneDistance, justified, y - 100, y + h + 200)} */}
+//     {drawFrags(oneDistance, justified)}
+//     {/* {annotateFrags(oneDistance, justified)} */}
+//   </svg>;
+// }
 
 const bbox = (pts: (readonly [number, number])[], s: number = 1) => {
   const xmin = Math.min(...pts.map(p => p[0]));

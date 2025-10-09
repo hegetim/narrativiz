@@ -6,6 +6,7 @@ import _ from "lodash";
 import { Storyline, WithAlignedGroups } from "./Storyline";
 import { assertNever, assertThat, ifDefined, matchByKind, matchString, windows2 } from "./Utils";
 import { blocks2SLine } from "../components/DrawingUtils";
+import { justifyLayers as justifyLP } from "./JustifyLP";
 
 const minRadius = 1;
 const meetingWidth = 0.5;
@@ -14,10 +15,17 @@ const eps = 1e-6;
 
 export type JustifyConfig = {
   layerStyle: 'uniform' | 'condensed',
-  blockHandling: 'full' | 'continuous'
+  blockHandling: 'full' | 'continuous' | 'lp'
 }
 
-export const justifyLayers = (s: Storyline<WithAlignedGroups>, { layerStyle, blockHandling }: JustifyConfig): DrawingFrag[] => {
+export const justifyLayers = async (
+  s: Storyline<WithAlignedGroups>,
+  { layerStyle, blockHandling }: JustifyConfig
+): Promise<DrawingFrag[]> => {
+  if (blockHandling === 'lp') {
+    return await justifyLP(s, layerStyle);
+  }
+
   const layers: Stage1A[][] = s.layers.map(layer =>
     layer.groups.flatMap(group =>
       group.charactersOrdered.map((char, j) => ({ char, inMeeting: group.kind === 'active', y: group.atY + j }))
@@ -79,7 +87,7 @@ const joinBlocks = (sizeL: number, offsetL: number, sizeR: number, offsetR: numb
 }
 
 const mkBlocks = <T extends {}>(
-  mode: JustifyConfig['blockHandling'],
+  mode: Exclude<JustifyConfig['blockHandling'], 'lp'>,
   ts: T[],
   slope: (t: T) => -1 | 0 | 1,
   y: (t: T) => number,

@@ -8,7 +8,7 @@ import './index.css';
 import { App } from './components/App';
 import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import '../node_modules/@fortawesome/fontawesome-svg-core/styles.css';
-import { FakeStoryComponent } from './components/StorylineComponent';
+// import { FakeStoryComponent } from './components/StorylineComponent';
 import { OneShot } from './components/OneShot';
 
 faConfig.autoAddCss = false;

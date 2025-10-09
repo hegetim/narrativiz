@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from "react";
 import { align } from "../model/Align";
 import { Storyline, WithAlignedGroups, WithLayerDescriptions, WithRealizedGroups } from "../model/Storyline";
+import { DrawingFrag, justifyLayers } from "../model/Justify";
 import { StorylineComponent } from "./StorylineComponent";
 import { masterFiles, SelectFile } from "./StorylineFromFile";
 import { defaultConfig, UserConfig } from "../model/Config";
@@ -16,7 +17,11 @@ import "./App.css";
 type Props = {};
 type State = { kind: 'ready' }
   | { kind: 'processing', story: Storyline<WithRealizedGroups, WithLayerDescriptions> }
-  | { kind: 'show', story: Storyline<WithAlignedGroups, WithLayerDescriptions>; };
+  | {
+    kind: 'show',
+    story: Storyline<WithAlignedGroups, WithLayerDescriptions>,
+    fragments: DrawingFrag[],
+  };
 
 
 export const App = ({ }: Props) => {
@@ -26,7 +31,11 @@ export const App = ({ }: Props) => {
   useEffect(() => {
     if (state.kind === 'processing') {
       align(state.story, config.alignmentMode, config.gapRatio, config.alignContinuedMeetings)
-        .then(aligned => setState({ kind: 'show', story: aligned! }));
+        .then(aligned =>
+          justifyLayers(aligned!, { blockHandling: config.blockHandling, layerStyle: config.layerWidth })
+            .then(frags => [aligned, frags] as const)
+        )
+        .then(([aligned, fragments]) => setState({ kind: 'show', story: aligned!, fragments }));
     }
   }, [state]);
 
@@ -34,16 +43,15 @@ export const App = ({ }: Props) => {
     if (state.kind === 'show') {
       setState({ kind: 'processing', story: state.story })
     }
-  }, [config.alignmentMode, config.gapRatio, config.alignContinuedMeetings]);
+  }, [config.alignmentMode, config.gapRatio, config.alignContinuedMeetings, config.blockHandling, config.layerWidth]);
 
   if (state.kind === 'ready') {
     return <SelectFile handler={masterFiles(story => setState({ kind: 'processing', story }))} />;
   } if (state.kind === 'show') {
-    printMetrics(state.story);
+    printMetrics(state.story, state.fragments);
     return <React.Fragment>
       <SettingsComponent config={config} setConfig={setConfig} />
-      <StorylineComponent story={state.story} blockHandling={config.blockHandling} layerStyle={config.layerWidth}
-        oneDistance={config.oneDistance} />
+      <StorylineComponent fragments={state.fragments} oneDistance={config.oneDistance} />
     </React.Fragment>
   } else {
     return "";

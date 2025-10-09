@@ -225,7 +225,7 @@ Subject To
 ${cs.map(stringify).join("\n")}`
   const _bounds = bounds.map(({ lb, id, ub }) => `${lb} <= ${id} <= ${ub}`).join("\n");
   return base
-    + (_.isEmpty(bounds) ? "" : `\nBounds\n ${_bounds}`)
+    + (_.isEmpty(bounds) ? "" : `\nBounds\n${_bounds}`)
     + (_.isEmpty(general) ? "" : `\nGeneral\n${general.join(" ")}`)
     + (_.isEmpty(binary) ? "" : `\nBinary\n${binary.join(" ")}`)
     + "\nEnd";

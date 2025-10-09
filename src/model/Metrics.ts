@@ -5,15 +5,16 @@
 import _ from "lodash";
 import { Storyline, WithAlignedGroups } from "./Storyline";
 import { pushMMap, windows2 } from "./Utils";
+import { corners, DrawingFrag } from "./Justify";
 
 type InGroup = { groupId: string, y: number };
 type CharLines = Map<string, InGroup[]>;
 
 const eps = 1e-6;
 
-export const printMetrics = (story: Storyline<WithAlignedGroups>) => {
+export const printMetrics = (story: Storyline<WithAlignedGroups>, frags: DrawingFrag[]) => {
   const lines = toCharLines(story);
-  const allMetrics = { ...baseMetrics(story), ...metrics(lines) };
+  const allMetrics = { ...baseMetrics(story), ...metrics(lines), ...drawingMetrics(frags) };
   console.log(allMetrics);
 }
 
@@ -51,4 +52,18 @@ const metrics = (lines: CharLines) => {
     }
   }
   return { wc, lwh, qwh, th: ymax - ymin };
+}
+
+const drawingMetrics = (frags: DrawingFrag[]) => {
+  const pts = frags.flatMap(corners);
+
+  const xmin = Math.min(...pts.map(p => p[0]));
+  const ymin = Math.min(...pts.map(p => p[1]));
+  const xmax = Math.max(...pts.map(p => p[0]));
+  const ymax = Math.max(...pts.map(p => p[1]));
+
+  const tw = xmax - xmin;
+  const area = tw * (ymax - ymin);
+
+  return { tw, area };
 }

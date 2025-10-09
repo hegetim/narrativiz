@@ -27,7 +27,7 @@ export const SettingsComponent = ({ config, setConfig }: Props) => {
 
     <div {...cls("settings-label")}>block handling</div>
     <SelectButton<JustifyConfig["blockHandling"]> value={config.blockHandling}
-      labels={{ continuous: "continuous", full: "full" }}
+      labels={{ continuous: "continuous", full: "full", lp: "lp" }}
       setValue={value => commit(c => c.blockHandling = value)} />
 
     <div {...cls("settings-label")}>layer width</div>
