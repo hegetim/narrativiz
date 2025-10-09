@@ -211,7 +211,7 @@ const makeLayerLP = (items: Map<string, ItemState>) => {
 const boringLayer = (items: Map<string, ItemState>): undefined | readonly [number, Map<string, SLine>] => {
   for (let item of items.values()) {
     if (item.yl === undefined && item.yr === undefined) { throw new Error(`broken item: ${item}`); }
-    if (item.yl !== undefined && item.yr !== undefined && Math.abs(dy(item)) > 0) { return undefined; }
+    if (item.yl !== undefined && item.yr !== undefined && Math.abs(dy(item)) > eps) { return undefined; }
   }
   return [minLayerWidth, new Map()];
 }
