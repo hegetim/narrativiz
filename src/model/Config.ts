@@ -16,7 +16,7 @@ export type UserConfig = {
 
 export const defaultConfig: UserConfig = {
   layerWidth: "condensed",
-  blockHandling: "continuous",
+  blockHandling: "lp",
   oneDistance: 20,
   alignmentMode: "sum-of-heights",
   gapRatio: 1.0,

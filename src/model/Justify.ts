@@ -127,7 +127,7 @@ const mkBlocks = <T extends {}>(
       });
       const [up0, down0] = [ifDefined(rem[firstUp], y) ?? 0, ifDefined(rem[firstDown], y) ?? 0];
       const [upBs, downBs] = [(ifDefined(rem[lastUp], y) ?? 0) - up0, (ifDefined(rem[lastDown], y) ?? 0) - down0];
-      console.log({ firstUp, firstDown, lastUp, lastDown, up0, down0, upBs, downBs })
+      // console.log({ firstUp, firstDown, lastUp, lastDown, up0, down0, upBs, downBs })
       rem.forEach(t => {
         if (t.slope === -1) {
           res.push({ ...t, bs: upBs, offset: upBs === 0 ? 0 : (y(t) - up0) / upBs });

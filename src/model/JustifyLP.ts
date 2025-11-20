@@ -27,7 +27,7 @@ type PreparedLayer = {
 const eps = 1e-6;
 const minRadius = 1;
 const meetingWidth = 0.5;
-const minLayerWidth = 0.8;
+const minLayerWidth = 0.3;
 
 export const justifyLayers = async (
   s: Storyline<WithAlignedGroups>,
@@ -41,13 +41,13 @@ export const justifyLayers = async (
   const [result, _0] = matchString(layerStyle, {
     condensed: () => layers.reduce<readonly [DrawingFrag[], number]>(([acc, x], layer, i) => {
       acc.push(...mkLayerFrags(x, layer.dx, layer.original, i, layer.items, layer.sLines));
-      return [acc, x + layer.dx];
+      return [acc, x + layer.dx + meetingWidth];
     }, [[], 0]),
     uniform: () => {
       const width = Math.max(...layers.map(pl => pl.dx));
       return layers.reduce<readonly [DrawingFrag[], number]>(([acc, x], layer, i) => {
         acc.push(...mkLayerFrags(x, width, layer.original, i, layer.items, layer.sLines));
-        return [acc, x + Math.max(width, layer.dx)];
+        return [acc, x + width + meetingWidth];
       }, [[], 0]);
     }
   });
@@ -220,7 +220,7 @@ const prepareLayer = (items: Map<string, ItemState>, solution: HighsSolution) =>
   if (solution.Status !== 'Optimal') { return undefined; }
 
   const result: Map<string, SLine> = new Map();
-  const dx = Math.sqrt(solution.Columns['dx2']?.Primal!)
+  const dx = Math.sqrt(solution.Columns['dx2']?.Primal!);
 
   items.values().forEach(item => {
     const dyi = dy(item);
@@ -250,7 +250,7 @@ const mkLayerFrags = (
         result.push({
           kind: 'char-init',
           char: { id: char, inMeeting: group.kind === 'active' },
-          pos: { x: x + dx - meetingWidth, y: item.yr! },
+          pos: { x: x + dx, y: item.yr! },
           dx: meetingWidth,
         });
       } else {
@@ -259,14 +259,14 @@ const mkLayerFrags = (
           char: { id: char, inMeeting: group.kind === 'active' },
           pos: { x, y: item.yl },
           sLine: sLine ? sLine : { dx, dy: 0, r1: 0, r2: 0 },
-          dx,
+          dx: dx + meetingWidth,
         });
       }
     });
   });
   result.push(...layer.groups.filter(g => g.kind === 'active').map<DrawingFrag>(g => ({
     kind: 'meeting',
-    pos: { x: x + dx - meetingWidth, y: g.atY },
+    pos: { x: x + dx, y: g.atY },
     dx: meetingWidth,
     dy: g.characters.length - 1,
     layer: layerId,
